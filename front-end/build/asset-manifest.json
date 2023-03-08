@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.cd78fe09.css",
+    "main.js": "/static/js/main.ad16d34f.js",
+    "static/media/rocket-spinner.gif": "/static/media/rocket-spinner.21674e858f12d67fcccf.gif",
+    "static/media/rocket2.png": "/static/media/rocket2.febe6d340b6ede224c85.png",
+    "index.html": "/index.html",
+    "main.cd78fe09.css.map": "/static/css/main.cd78fe09.css.map",
+    "main.ad16d34f.js.map": "/static/js/main.ad16d34f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cd78fe09.css",
+    "static/js/main.ad16d34f.js"
+  ]
+}

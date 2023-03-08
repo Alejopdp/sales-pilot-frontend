@@ -1,0 +1,30 @@
+{
+    "name": "Sales Pilot",
+    "version": "1.0",
+    "manifest_version": 3,
+    "content_scripts": [
+        {
+            "matches": ["https://*.linkedin.com/*"],
+            "css": ["/sidebar/sidebar.css"],
+            "js": ["/react/js/main.js"],
+            "run_at": "document_start"
+        }
+    ],
+    "background": {
+        "service_worker": "bg-wrapper.js"
+    },
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self';connect-src  https://us-central1-smart-sales-gpt.cloudfunctions.net https://*.linkedin.com; object-src 'self'"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["/sidebar/sidebar.css", "/sidebar/index.html", "/react/js/*", "/background.js"],
+            "matches": ["https://*.linkedin.com/*", "https://*.cloudfunctions.net/*"]
+        }
+    ],
+    "externally_connectable": {
+        "ids": ["enkbjolcglilknggjlngokegcfgpebnl"],
+        "matches": ["https://*.linkedin.com/*"]
+    }
+}
