@@ -25,7 +25,7 @@ const PostSearchSidebarContent = ({ response, setResponse }: any) => {
                 return
             }
 
-            setResponse({ ...response, messages: [...response.messages, ...res.data.messages] })
+            setResponse({ ...response, messages: [...response.messages, ...res.data.message] })
         } catch (error) {
             console.log('Error: ', error)
         }
@@ -38,7 +38,7 @@ const PostSearchSidebarContent = ({ response, setResponse }: any) => {
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) enqueueSnackbar(res.data?.message ?? 'Error')
 
-            setResponse({ ...response, messages: res.data.messages })
+            setResponse({ ...response, messages: res.data.message })
         } catch (error) {
             console.log('Error: ', error)
         }
@@ -46,62 +46,56 @@ const PostSearchSidebarContent = ({ response, setResponse }: any) => {
     }
 
     return (
-        <Container style={{ paddingTop: 16, paddingBottom: 16 }}>
-            <Grid xs={12}>
-                {!error && response.name && (
-                    <Box display="flex" marginBottom={6}>
-                        <Avatar alt="Remy Sharp" src={response.avatar} sx={{ width: 112, height: 112 }} />
-                        <Box display="flex" flexDirection={'column'} alignItems="flex-start" paddingLeft={4}>
-                            <Typography variant="h2" marginBottom={1}>
-                                {response.name}
-                            </Typography>
-                            <Typography variant="body1" marginBottom={2}>
-                                {response.position}
-                            </Typography>
-                            {/* <Button
-                                style={{ height: 44, fontSize: 16 }}
-                                variant="contained"
-                                onClick={() => alert('Volver atras!')}
-                            >
-                                BUSCAR OTRO PERFIL
-                            </Button> */}
-                        </Box>
-                    </Box>
-                )}
-            </Grid>
-            <Grid xs={12} padding={0}>
-                {error ? (
-                    <EmptyState
-                        title="No encontramos mensajes"
-                        subtitle="Revisa que la URL ingresada sea de un usuario existente"
-                        handler={() => tryAgain('')}
-                    />
-                ) : (
-                    <Paper elevation={0}>
-                        <Typography variant="h4" marginBottom={8}>
-                            Mensajes personalizados
-                        </Typography>
-                        {response.messages?.map((message: string, idx: number) => (
-                            <GeneratedMessage key={`message-${idx}`} message={message} />
-                        ))}
-                        {isLoadingMoreOptions ? (
-                            <Box display="flex" width="100%">
-                                <CircularProgress style={{ margin: 'auto' }} />
-                            </Box>
-                        ) : (
-                            <Button
-                                style={{ height: 52, fontSize: 18 }}
-                                variant="contained"
-                                fullWidth
-                                onClick={() => addMessages('')}
-                            >
-                                VER MAS OPCIONES
-                            </Button>
-                        )}
-                    </Paper>
-                )}
-            </Grid>
-        </Container>
+        <></>
+        // <Container style={{ paddingTop: 16, paddingBottom: 16 }}>
+        //     <Grid xs={12}>
+        //         {!error && response.name && (
+        //             <Box display="flex" marginBottom={6}>
+        //                 <Avatar alt="Remy Sharp" src={response.avatar} sx={{ width: 112, height: 112 }} />
+        //                 <Box display="flex" flexDirection={'column'} alignItems="flex-start" paddingLeft={4}>
+        //                     <Typography variant="h2" marginBottom={1}>
+        //                         {response.name}
+        //                     </Typography>
+        //                     <Typography variant="body1" marginBottom={2}>
+        //                         {response.position}
+        //                     </Typography>
+        //                 </Box>
+        //             </Box>
+        //         )}
+        //     </Grid>
+        //     <Grid xs={12} padding={0}>
+        //         {error ? (
+        //             <EmptyState
+        //                 title="No encontramos mensajes"
+        //                 subtitle="Revisa que la URL ingresada sea de un usuario existente"
+        //                 handler={() => tryAgain('')}
+        //             />
+        //         ) : (
+        //             <Paper elevation={0}>
+        //                 <Typography variant="h4" marginBottom={8}>
+        //                     Mensajes personalizados
+        //                 </Typography>
+        //                 {response.messages?.map((message: string, idx: number) => (
+        //                     <GeneratedMessage key={`message-${idx}`} message={message} handleMessageChange={() => ''} />
+        //                 ))}
+        //                 {isLoadingMoreOptions ? (
+        //                     <Box display="flex" width="100%">
+        //                         <CircularProgress style={{ margin: 'auto' }} />
+        //                     </Box>
+        //                 ) : (
+        //                     <Button
+        //                         style={{ height: 52, fontSize: 18 }}
+        //                         variant="contained"
+        //                         fullWidth
+        //                         onClick={() => addMessages('')}
+        //                     >
+        //                         VER MAS OPCIONES
+        //                     </Button>
+        //                 )}
+        //             </Paper>
+        //         )}
+        //     </Grid>
+        // </Container>
     )
 }
 

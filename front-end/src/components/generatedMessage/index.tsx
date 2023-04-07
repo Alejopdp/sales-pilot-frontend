@@ -1,10 +1,25 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Box, Typography, Button } from '@mui/material'
+import React, { useEffect } from 'react'
+import { Box, Button } from '@mui/material'
 import { useSnackbar } from 'notistack'
+import FileCopyIcon from '@mui/icons-material/FileCopy'
 
-const GeneratedMessage = ({ message }: { message: string }) => {
+function resizeTextarea(event: any) {
+    event.target.style.height = 'auto'
+    event.target.style.height = event.target.scrollHeight + 'px'
+}
+
+const GeneratedMessage = ({
+    message,
+    handleMessageChange,
+}: {
+    message: string
+    handleMessageChange: (newMessage: string) => void
+}) => {
     const { enqueueSnackbar } = useSnackbar()
+
+    useEffect(() => {
+        resizeTextarea({ target: document.querySelector('textarea') })
+    }, [message])
 
     const handleCopyMessage = async (message: string) => {
         enqueueSnackbar('Mensaje copiado', { variant: 'success' })
@@ -12,21 +27,34 @@ const GeneratedMessage = ({ message }: { message: string }) => {
     }
 
     return (
-        <Box display={'flex'} justifyContent="space-between" alignItems="center" marginBottom={2}>
-            <Typography maxWidth={'80%'} fontSize={14}>
-                {message}
-            </Typography>
+        <Box display={'flex'} flexDirection="column" marginBottom={2} width="100%">
+            <Box marginBottom={3} display="flex">
+                <textarea
+                    value={message ?? ''}
+                    style={{
+                        border: 'none',
+                        borderRadius: 8,
+                        padding: 16,
+                        backgroundColor: '#F3F2EF',
+                        overflow: 'hidden',
+                        resize: 'none',
+                        flex: 1,
+                    }}
+                    onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => resizeTextarea(e)}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleMessageChange(e.target.value)}
+                />
+            </Box>
             <Button
-                variant="text"
+                variant="contained"
                 onClick={() => handleCopyMessage(message)}
-                style={{ height: 'fit-content', fontSize: 14 }}
+                style={{ height: 42, fontSize: 14, backgroundColor: '#2967F6', borderRadius: 8 }}
+                startIcon={<FileCopyIcon />}
+                fullWidth
             >
-                Copiar
+                Copiar mensaje
             </Button>
         </Box>
     )
 }
-
-GeneratedMessage.propTypes = {}
 
 export default GeneratedMessage

@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { BackgroundProvider } from './context/backgroundConnection'
 import { closeSidebarOnOutsideClick, initializeExtension } from './initialize-extension'
 import { SALES_PILOT_DOM_CONTAINER_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from './constants'
+import { NavigationProvider } from './context/navigation'
 
 let root
 console.log('process.env.NODE_ENV: ', process.env.NODE_ENV)
@@ -21,7 +22,9 @@ if (process.env.NODE_ENV !== 'development') {
             <React.StrictMode>
                 <SnackbarProvider>
                     <BackgroundProvider>
-                        <App />
+                        <NavigationProvider>
+                            <App />
+                        </NavigationProvider>
                     </BackgroundProvider>
                 </SnackbarProvider>
             </React.StrictMode>
@@ -43,7 +46,9 @@ if (process.env.NODE_ENV !== 'development') {
             )}
             <SnackbarProvider>
                 <BackgroundProvider>
-                    <App />
+                    <NavigationProvider>
+                        <App />
+                    </NavigationProvider>
                 </BackgroundProvider>
             </SnackbarProvider>
         </React.StrictMode>

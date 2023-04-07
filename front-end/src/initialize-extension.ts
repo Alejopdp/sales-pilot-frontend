@@ -93,6 +93,13 @@ function addSalesPilotButtonToProfile() {
     anchor.appendChild(button)
 }
 
+function handleBubbleChatClick() {
+    // Get profile URL
+    // Get avatar from chat
+    // Get name from chat
+    // Get position from chat
+}
+
 function addSalesPilotButtonToBubbleChat() {
     const mutationObserver = new MutationObserver((mutations) => {
         console.log('Mutation observed!')
@@ -137,5 +144,7 @@ function initializeExtension() {
         }, 3000)
     })
 }
+
+
 
 export { initializeExtension }

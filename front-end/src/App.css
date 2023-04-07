@@ -38,6 +38,8 @@
 }
 
 .sales-pilot-sidebar {
+    display: flex;
+    flex-direction: column;
     position: fixed;
     top: 0;
     left: 0;
@@ -45,14 +47,14 @@
     width: 33vw;
     background-color: #fff;
     transition: transform 0.3s ease-out;
-    transform: translateX(-33vw);
+    transform: translateX(calc(-33vw - 24px));
     z-index: 999999;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 .sales-pilot-sidebar.sales-pilot-sidebar-active {
     transform: translateX(0);
-    padding-left: 16px;
-    padding-right: 16px;
 }
 
 .sales-pilot-sidebar-inner-container {
@@ -70,4 +72,21 @@
     height: 52px;
     font-size: 18px;
     width: 100%;
+}
+
+.fa-icon {
+    cursor: pointer;
+}
+
+/* Write a hover effect that gives color to the font awesome light icon thumbs up. It should colour the icon when the mouse hovers over it and make a little shake effect */
+.fa-thumbs-up:hover {
+    color: rgb(41, 103, 246);
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
+.fa-thumbs-down:hover {
+    color: red;
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
 }
