@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/front-end/build
 
 # production
 /react
