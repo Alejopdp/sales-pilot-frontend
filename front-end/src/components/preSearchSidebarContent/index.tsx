@@ -15,7 +15,7 @@ const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
     const { enqueueSnackbar } = useSnackbar()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { getMessagsWithLinkedinUrl } = useApi({
+    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished } = useApi({
         enviroment: process.env.NODE_ENV as 'development' | 'production',
         fail: false,
     })
@@ -32,8 +32,10 @@ const PreSearchSidebarContent = () => {
     const { getExperience, getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
     useEffect(() => {
+        console.log(isBackgroundConnectionEstablished)
+        if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
         handleSubmit()
-    }, [])
+    }, [isBackgroundConnectionEstablished])
 
     const handleSubmit = async () => {
         setIsSubmitting(true)

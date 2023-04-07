@@ -137,7 +137,6 @@ function addSalesPilotButtonToBubbleChat() {
 
 function initializeExtension() {
     console.log("Initializing extension")
-    setUrlChangeListener()
 
     const body = document.querySelector('body')
     if (body) {

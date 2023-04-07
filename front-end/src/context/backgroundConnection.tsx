@@ -7,14 +7,14 @@ interface IMessage {
 }
 
 interface IBackgroundResponse {
-    success: boolean
-    data?: any
+    status: number
+    data: any
     error?: string
 }
 
 interface IBackgroundConnection {
-    send: (message: IMessage) => Promise<IBackgroundResponse> | any
-    close: () => void
+    send: ((message: IMessage) => Promise<IBackgroundResponse>) | null
+    close: (() => void) | null
 }
 
 interface IBackgroundContext {
@@ -28,10 +28,6 @@ const BackgroundContext = createContext<IBackgroundContext>({
 export const useBackgroundConnection = (): IBackgroundConnection | null => {
     const { connection } = useContext(BackgroundContext)
 
-    // if (!connection) {
-    //     throw new Error('No background connection available')
-    // }
-
     return connection
 }
 
@@ -39,9 +35,9 @@ interface IBackgroundProviderProps {
     children: React.ReactNode
 }
 
-const connectionIniitialState = {
-    send: () => console.log('No connection established'),
-    close: () => console.log('No connection'),
+const connectionIniitialState: IBackgroundConnection = {
+    send: null,
+    close: null,
 }
 export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.Element => {
     const [connection, setConnection] = useState<IBackgroundConnection>(connectionIniitialState)
@@ -51,11 +47,12 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
 
         if (process.env.NODE_ENV !== 'development') {
             try {
+                console.log('Connecting to background...')
                 //@ts-ignore
                 port = chrome.runtime.connect(EXTENSION_ID, { name: 'background' })
 
                 setConnection({
-                    send: (message) =>
+                    send: (message: IMessage) =>
                         new Promise<IBackgroundResponse>((resolve) => {
                             port.postMessage(message)
 

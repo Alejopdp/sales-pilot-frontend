@@ -1,7 +1,5 @@
-import fetchAdapter from '@vespaiach/axios-fetch-adapter'
-import axios, { AxiosResponse } from 'axios'
-import { useMemo } from 'react'
-import { EXTENSION_ID } from '../constants'
+import { AxiosResponse } from 'axios'
+import { useEffect, useMemo, useState } from 'react'
 import { useBackgroundConnection } from '../context/backgroundConnection'
 import { MessageResponse } from '../types'
 
@@ -20,12 +18,21 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
 
         return 201
     }, [fail])
+    const [isBackgroundConnectionEstablished, setIsBackgroundConnectionEstablished] = useState(false)
+
+    useEffect(() => {
+        if (!bacgroundConnection || bacgroundConnection?.send === null) return
+        setIsBackgroundConnectionEstablished(true)
+    }, [bacgroundConnection])
 
     const getMessagsWithLinkedinUrl = async (
         leadUrl: string
     ): Promise<Pick<AxiosResponse<MessageResponse>, 'data' | 'status'>> => {
         if (process.env.NODE_ENV !== 'development') {
-            const res = await bacgroundConnection?.send({
+            if (!bacgroundConnection || bacgroundConnection?.send === null)
+                throw new Error('Connection to background not yet establsihed')
+
+            const res = await bacgroundConnection.send({
                 action: 'FETCH_PROFILE_MESSAGES',
                 data: {
                     leadUrl,
@@ -46,7 +53,7 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
         }
     }
 
-    return { getMessagsWithLinkedinUrl }
+    return { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished }
 }
 
 export default useApi
