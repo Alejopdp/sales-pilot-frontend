@@ -1,4 +1,4 @@
-import { EXTENSION_ID, SALES_PILOT_BUBBLE_CHAT_ID, SALES_PILOT_DOM_CONTAINER_ID, SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR, SALES_PILOT_PROFILE_BUTTON_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from "./constants"
+import { EXTENSION_ID, SALES_PILOT_BUBBLE_CHAT_ID, SALES_PILOT_DOM_CONTAINER_ID, SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR, SALES_PILOT_PROFILE_BUTTON_ID, SALES_PILOT_SCRIPT_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from "./constants"
 import { isALinkedinProfileUrl } from "./helpers"
 
 export function toggleSidebar() {
@@ -8,8 +8,10 @@ export function toggleSidebar() {
 }
 
 function loadSidebar() {
+    if (document.querySelector(`#${SALES_PILOT_SCRIPT_ID}`)) return
     console.log("Loading sidebar script")
     const loadSidebarScript = document.createElement('script')
+    loadSidebarScript.setAttribute('id', SALES_PILOT_SCRIPT_ID)
     //@ts-ignore
     loadSidebarScript.setAttribute('src', chrome.runtime.getURL('/react/js/main.js'))
     loadSidebarScript.setAttribute('type', 'module')
@@ -31,6 +33,7 @@ function loadSidebarStyles() {
 }
 
 function addDOMContainer() {
+    if (document.querySelector(`#${SALES_PILOT_DOM_CONTAINER_ID}`)) return
     const salesPilotDOMContainer = document.createElement('div')
     salesPilotDOMContainer.setAttribute('id', SALES_PILOT_DOM_CONTAINER_ID)
     document.body.appendChild(salesPilotDOMContainer)
@@ -75,22 +78,27 @@ export function closeSidebarOnOutsideClick() {
     })
 }
 
-
-function addSalesPilotButtonToProfile() {
-    if (document.querySelector(`#${SALES_PILOT_PROFILE_BUTTON_ID}`)) return
-    const anchor = document.querySelector(SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR)
-    if (!anchor) {
-        console.log("Anchor not found at addSalesPilotButtonToProfile function")
-        return
-    }
+function createProfileButton() {
     const button = document.createElement('button')
     button.innerHTML = 'Send Message'
     button.id = SALES_PILOT_PROFILE_BUTTON_ID
     button.addEventListener('click', () => {
         toggleSidebar()
     })
-    //@ts-ignore
+
+    return button
+}
+
+function addSalesPilotButtonToProfile() {
+    if (document.querySelector(`#${SALES_PILOT_PROFILE_BUTTON_ID}`)) return
+    const anchor = document.querySelector(SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR)
+    if (!anchor) return
+    console.log("Anchor found!")
+    const button = createProfileButton()
+    console.log("Profile button created")
     anchor.appendChild(button)
+    console.log("Profile button appended to anchor")
+
 }
 
 function handleBubbleChatClick() {
@@ -102,7 +110,6 @@ function handleBubbleChatClick() {
 
 function addSalesPilotButtonToBubbleChat() {
     const mutationObserver = new MutationObserver((mutations) => {
-        console.log('Mutation observed!')
         document.querySelectorAll('.msg-form__left-actions.display-flex').forEach((element) => {
             const bubbleChatActionsContainer = element
             if (element.querySelector('#sales-pilot-chat-button')) return
@@ -129,20 +136,24 @@ function addSalesPilotButtonToBubbleChat() {
 
 
 function initializeExtension() {
-    document.addEventListener('readystatechange', (e) => {
-        //@ts-ignore
-        if (e.target.readyState !== 'complete') return
-        //@ts-ignore
-        console.log(e.target.readyState)
-        setTimeout(() => {
-            console.log("Initializing extension")
+    console.log("Initializing extension")
+    setUrlChangeListener()
+
+    const body = document.querySelector('body')
+    if (body) {
+        const mutationObserver = new MutationObserver((mutations) => {
             addDOMContainer()
             loadSidebar()
-            addSalesPilotButtonToBubbleChat()
             addSalesPilotButtonToProfile()
-            setUrlChangeListener()
-        }, 3000)
-    })
+            //         addSalesPilotButtonToBubbleChat()
+        })
+
+        //@ts-ignore
+        mutationObserver.observe(body, { childList: true, subtree: true })
+    }
+    else {
+        setTimeout(initializeExtension, 100)
+    }
 }
 
 

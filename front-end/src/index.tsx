@@ -11,6 +11,7 @@ import { NavigationProvider } from './context/navigation'
 
 let root
 console.log('process.env.NODE_ENV: ', process.env.NODE_ENV)
+
 //@ts-ignore
 if (process.env.NODE_ENV !== 'development') {
     initializeExtension()

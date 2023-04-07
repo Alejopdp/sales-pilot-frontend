@@ -1,15 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.cd78fe09.css",
-    "main.js": "/static/js/main.ad16d34f.js",
+    "main.css": "/static/css/main.6a8c53cf.css",
+    "main.js": "/static/js/main.6871bf21.js",
     "static/media/rocket-spinner.gif": "/static/media/rocket-spinner.21674e858f12d67fcccf.gif",
-    "static/media/rocket2.png": "/static/media/rocket2.febe6d340b6ede224c85.png",
     "index.html": "/index.html",
-    "main.cd78fe09.css.map": "/static/css/main.cd78fe09.css.map",
-    "main.ad16d34f.js.map": "/static/js/main.ad16d34f.js.map"
+    "main.6a8c53cf.css.map": "/static/css/main.6a8c53cf.css.map",
+    "main.6871bf21.js.map": "/static/js/main.6871bf21.js.map"
   },
   "entrypoints": [
-    "static/css/main.cd78fe09.css",
-    "static/js/main.ad16d34f.js"
+    "static/css/main.6a8c53cf.css",
+    "static/js/main.6871bf21.js"
   ]
 }

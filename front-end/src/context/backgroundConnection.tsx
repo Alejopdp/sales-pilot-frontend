@@ -40,8 +40,8 @@ interface IBackgroundProviderProps {
 }
 
 const connectionIniitialState = {
-    send: () => alert('No connection established'),
-    close: () => alert('No connection'),
+    send: () => console.log('No connection established'),
+    close: () => console.log('No connection'),
 }
 export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.Element => {
     const [connection, setConnection] = useState<IBackgroundConnection>(connectionIniitialState)
