@@ -19,17 +19,11 @@ const Feedback = ({ handleFeedback, isFeedbackGranted }: FeedbackProps) => {
     return (
         <Box display="flex" flexDirection={'column'} alignItems={'center'}>
             {isFeedbackGranted ? (
-                <Typography fontSize={16} fontWeight={500}>
-                    Gracias, tu mensaje nos ayuda a mejorar
-                </Typography>
+                <Typography variant="h3">Gracias, tu mensaje nos ayuda a mejorar</Typography>
             ) : (
                 <>
-                    <Typography fontSize={16} fontWeight={500}>
-                        ¿Qué te ha parecido el mensaje?
-                    </Typography>
-                    <Typography fontSize={14} fontWeight={400} color={'#424242'}>
-                        Tu feedback nos ayuda a seguir mejorando
-                    </Typography>
+                    <Typography variant="h3">¿Qué te ha parecido el mensaje?</Typography>
+                    <Typography variant="subtitle1">Tu feedback nos ayuda a seguir mejorando</Typography>
                     <Box display="flex" flexDirection="row" alignItems="center" marginTop={3}>
                         <Box display="flex" flexDirection="column" alignItems="center" marginRight={2}>
                             <FontAwesomeIcon
@@ -37,6 +31,7 @@ const Feedback = ({ handleFeedback, isFeedbackGranted }: FeedbackProps) => {
                                 size="2x"
                                 className="fa-icon"
                                 onClick={() => handleFeedback(false)}
+                                style={{ cursor: 'pointer', color: '#424242' }}
                             />
                         </Box>
 
@@ -46,6 +41,7 @@ const Feedback = ({ handleFeedback, isFeedbackGranted }: FeedbackProps) => {
                                 size="2x"
                                 className="fa-icon"
                                 onClick={() => handleFeedback(true)}
+                                style={{ cursor: 'pointer', color: '#424242' }}
                             />
                         </Box>
                     </Box>

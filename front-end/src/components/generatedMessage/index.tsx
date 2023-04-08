@@ -47,7 +47,7 @@ const GeneratedMessage = ({
             <Button
                 variant="contained"
                 onClick={() => handleCopyMessage(message)}
-                style={{ height: 42, fontSize: 14, backgroundColor: '#2967F6', borderRadius: 8 }}
+                style={{ height: 42, fontSize: 14, backgroundColor: '#2967F6', borderRadius: 60 }}
                 startIcon={<FileCopyIcon />}
                 fullWidth
             >
