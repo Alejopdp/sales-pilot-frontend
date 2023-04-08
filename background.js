@@ -26,7 +26,15 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     // Send a message to the content script to confirm the connection
                     port.postMessage({
                         action: FETCH_PROFILE_MESSAGES,
-                        data: { status: res.status, data: { messages: res.data.messages } },
+                        data: {
+                            status: res.status,
+                            data: {
+                                message: res.data.message,
+                                avatar: res.data.avatar,
+                                name: res.data.name,
+                                position: res.data.position,
+                            },
+                        },
                     })
                 }
 
