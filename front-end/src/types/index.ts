@@ -4,4 +4,5 @@ export type MessageResponse = {
     avatar: string,
     name: string,
     position: string,
+    lastUrl: string
 }

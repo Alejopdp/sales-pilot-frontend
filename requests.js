@@ -1,10 +1,11 @@
 const API_URL = 'https://api.development.salespilot.app/api'
 
-export const getMessagsWithLinkedinUrl = async (leadUrl) => {
+export const getMessagsWithLinkedinUrl = async (leadUrl, access_token) => {
     const res = await fetch(`${API_URL}/linkedin`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            authorization: access_token,
         },
         body: JSON.stringify({
             leadUrl,
@@ -16,7 +17,7 @@ export const getMessagsWithLinkedinUrl = async (leadUrl) => {
 
 export const validateSession = async (access_token) => {
     try {
-        const res = await fetch(`${API_URL}/auth/validate-session`, { headers: { authrization: access_token } })
+        const res = await fetch(`${API_URL}/auth/validate-session`, { headers: { authorization: access_token } })
         const data = await res.json()
 
         return { status: res.status, data }

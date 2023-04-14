@@ -1,5 +1,11 @@
 import { io } from 'socket.io-client'
-import { FETCH_PROFILE_MESSAGES, SIGN_IN, VALIDATE_SESSION, WS_EVENT_SIGN_IN_SUCCESSFUL } from './api_actions'
+import {
+    FETCH_PROFILE_MESSAGES,
+    GIVE_FEEDBACK,
+    SIGN_IN,
+    VALIDATE_SESSION,
+    WS_EVENT_SIGN_IN_SUCCESSFUL,
+} from './api_actions'
 import { getMessagsWithLinkedinUrl, giveFeedback, validateSession } from './requests'
 
 chrome.runtime.onConnectExternal.addListener((newPort) => {
@@ -15,7 +21,7 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
 
         switch (message.action) {
             case FETCH_PROFILE_MESSAGES:
-                const res = await getMessagsWithLinkedinUrl(message.data.leadUrl)
+                const res = await getMessagsWithLinkedinUrl(message.data.leadUrl, message.data.access_token)
                 console.log('Message res: ', res)
                 if (res.status !== 201)
                     port.postMessage({
@@ -44,13 +50,14 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                 if (validate_session_res.status !== 200) {
                     port.postMessage({
                         action: VALIDATE_SESSION,
-                        data: { status: res.status, data: { message: 'Ocurrio un error' } },
+                        data: { status: validate_session_res.status, data: { message: 'Ocurrio un error' } },
                     })
                 } else {
+                    console.log('Successful reuqest')
                     port.postMessage({
                         action: VALIDATE_SESSION,
                         data: {
-                            status: res.status,
+                            status: validate_session_res.status,
                             data: undefined,
                         },
                     })

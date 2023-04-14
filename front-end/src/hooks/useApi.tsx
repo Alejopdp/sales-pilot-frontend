@@ -37,6 +37,7 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
                 action: 'FETCH_PROFILE_MESSAGES',
                 data: {
                     leadUrl,
+                    access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
                 },
             })
 
@@ -50,6 +51,7 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
                     name: 'Max Carlucho',
                     position: 'Co fouonder and CRO of novolabs',
                     message: TEST_MESSAGE,
+                    lastUrl: 'https://www.linkedin.com/in/maxcarlucho/',
                 },
             }
         }

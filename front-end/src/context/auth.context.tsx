@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
-import { LOCAL_STORAGE_ACCESS_TOKEN, WS_EVENT_SIGN_IN_SUCCESSFUL } from '../constants'
+import { LOCAL_STORAGE_ACCESS_TOKEN, VALIDATE_SESSION, WS_EVENT_SIGN_IN_SUCCESSFUL } from '../constants'
 import axios from 'axios'
 import { useBackgroundConnection } from './backgroundConnection'
 
@@ -24,14 +24,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
-        const access_token = window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN) //TODO: Magic string
+        if (isAuthenticated || connection === null) return
+        const access_token = window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
         if (access_token) {
             setIsAuthenticating(true)
             validateAccessToken(access_token)
         } else {
             setIsAuthenticating(false)
         }
-    }, [])
+    }, [connection])
 
     const validateAccessToken = async (access_token: string) => {
         try {
@@ -53,15 +54,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     //TODO: Change environment logic
     const validateAccessTokenDevelopmentRes = async (access_token: string) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/auth/validate-session`, {
-            params: { access_token },
+            headers: { authorization: access_token },
         })
     }
 
     const validateAccessTokenProductionRes = async (access_token: string) => {
+        console.log('Validating token in prod')
         if (connection === null) return { status: 500 }
+        console.log('Sending request...')
         //@ts-ignore
-        const res = await connection.send({ action: 'VALIDATE_SESSION', data: { access_token } }) // TODO: MAgic string
-
+        const res = await connection.send({ action: VALIDATE_SESSION, data: { access_token } })
+        console.log('Res validate: ', res)
         return res
     }
     const handleSignIn = () => {

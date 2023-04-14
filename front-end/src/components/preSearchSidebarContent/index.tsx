@@ -26,6 +26,7 @@ const PreSearchSidebarContent = () => {
         position: '',
         message: '',
         avatar: '',
+        lastUrl: '',
     })
     const [isLoadingTryingAgain, setIsLoadingTryingAgain] = useState(false)
     const { selectedProfile, setSelectedProfile } = useNavigation()
@@ -34,31 +35,40 @@ const PreSearchSidebarContent = () => {
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
         console.log('triggerMessageSearchAfterSidebarIsOpened')
-        const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
-        console.log(isBackgroundConnectionEstablished)
+        console.log('isBackgroundConnectionEstablished:', isBackgroundConnectionEstablished)
         if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
-        if (!sidebar) return
-        if (response.message !== '') return
+        console.log('Response last url: ', response)
+        console.log('Window location: ', window.location.href)
+        if (response.lastUrl === window.location.href && response.message !== '') return
         setProfileIfScrape()
         handleSubmit()
-
-        // const observer = new MutationObserver((mutations) => {
-        //     mutations.forEach((mutation) => {
-        //         if (mutation.type === 'attributes') {
-        //             if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-        //                 console.log("Sidebar is opened, let's scrape the profile")
-        //                 setProfileIfScrape()
-        //                 handleSubmit()
-        //             }
-        //         }
-        //     })
-        // })
-
-        // observer.observe(sidebar, { attributes: true })
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
-        triggerMessageSearchAfterSidebarIsOpened()
+        if (!isBackgroundConnectionEstablished) return
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                console.log('Mutation')
+                //@ts-ignore
+                if (mutation.target.id === SALES_PILOT_SIDEBAR_ID) {
+                    console.log('Mutation was on sales pilot sidebar')
+                    const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
+                    if (!sidebar) return
+                    console.log('Sidebar exists')
+
+                    if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
+                        console.log("Sidebar is opened, let's scrape the profile")
+                        triggerMessageSearchAfterSidebarIsOpened()
+                    }
+                }
+            })
+        })
+
+        observer.observe(document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)!, { attributes: true })
+
+        return () => {
+            console.log('Sidebar unmounted, last resposne state: ', response)
+        }
     }, [triggerMessageSearchAfterSidebarIsOpened])
 
     const handleSubmit = async () => {
@@ -94,7 +104,7 @@ const PreSearchSidebarContent = () => {
                 throw new Error('Respuesta no exitosa')
             }
 
-            setResponse({ ...res.data, message: res.data.message })
+            setResponse({ ...res.data, message: res.data.message, lastUrl: profileUrl })
         } catch (error) {
             console.log(error)
             setError('No se encontraron mensajes')
