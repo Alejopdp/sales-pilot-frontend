@@ -15,7 +15,7 @@
     },
     "host_permissions": ["http://*/*", "https://*/*"],
     "content_security_policy": {
-        "extension_pages": "script-src 'self';connect-src  https://us-central1-smart-sales-gpt.cloudfunctions.net https://*.linkedin.com; object-src 'self'"
+        "extension_pages": "script-src 'self'; connect-src ws://api.salespilot.app ws://api.development.salespilot.app https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com; object-src 'self'"
     },
     "web_accessible_resources": [
         {

@@ -1,11 +1,11 @@
-// import { FETCH_PROFILE_MESSAGES } from './api_actions'
-// import { getMessagsWithLinkedinUrl } from './requests'
-importScripts('/api_actions.js', '/requests.js')
+import { io } from 'socket.io-client'
+import { FETCH_PROFILE_MESSAGES, SIGN_IN, VALIDATE_SESSION, WS_EVENT_SIGN_IN_SUCCESSFUL } from './api_actions'
+import { getMessagsWithLinkedinUrl, giveFeedback, validateSession } from './requests'
 
 chrome.runtime.onConnectExternal.addListener((newPort) => {
     console.log('On connect listener')
     // Save the port globally
-    port = newPort
+    const port = newPort
 
     // Add a listener for incoming messages on the port
     port.onMessage.addListener(async (message) => {
@@ -23,12 +23,12 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                         data: { status: res.status, data: { message: 'Ocurrio un error' } },
                     })
                 if (res.status === 201) {
-                    // Send a message to the content script to confirm the connection
                     port.postMessage({
                         action: FETCH_PROFILE_MESSAGES,
                         data: {
                             status: res.status,
                             data: {
+                                id: res.data.messageId,
                                 message: res.data.message,
                                 avatar: res.data.avatar,
                                 name: res.data.name,
@@ -37,7 +37,79 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                         },
                     })
                 }
+                break
+            case VALIDATE_SESSION:
+                const validate_session_res = await validateSession(message.data.access_token)
 
+                if (validate_session_res.status !== 200) {
+                    port.postMessage({
+                        action: VALIDATE_SESSION,
+                        data: { status: res.status, data: { message: 'Ocurrio un error' } },
+                    })
+                } else {
+                    port.postMessage({
+                        action: VALIDATE_SESSION,
+                        data: {
+                            status: res.status,
+                            data: undefined,
+                        },
+                    })
+                }
+
+                break
+
+            case SIGN_IN:
+                console.log('Connecting to socket')
+                const socket = io(`ws://api.development.salespilot.app`, { transports: ['websocket'] }) // TODO: Change w env var
+
+                socket.on('connect', () => {
+                    console.log('Connected to server, socket id: ', socket.id)
+                    socket.emit('sign_in')
+                    port.postMessage({
+                        action: SIGN_IN,
+                        data: {
+                            status: 200,
+                            data: {
+                                socketId: socket.id,
+                            },
+                        },
+                    })
+
+                    socket.on(WS_EVENT_SIGN_IN_SUCCESSFUL, (event) => {
+                        console.log('sign_in_successful: ', event)
+                        port.postMessage({
+                            action: WS_EVENT_SIGN_IN_SUCCESSFUL,
+                            data: {
+                                status: 200,
+                                access_token: event.access_token,
+                            },
+                        })
+                    })
+                })
+                break
+
+            case GIVE_FEEDBACK:
+                const feedback_res = await giveFeedback(
+                    message.data.messageId,
+                    message.data.isPositive,
+                    message.data.comment,
+                    message.data.access_token
+                )
+                console.log('Message res: ', feedback_res)
+
+                if (feedback_res.status !== 201)
+                    port.postMessage({
+                        action: GIVE_FEEDBACK,
+                        data: { status: feedback_res.status, data: { message: 'Ocurrio un error' } },
+                    })
+                if (res.status === 201) {
+                    port.postMessage({
+                        action: GIVE_FEEDBACK,
+                        data: {
+                            status: feedback_res.status,
+                        },
+                    })
+                }
                 break
         }
     })
@@ -46,29 +118,3 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
         console.log('Disconencted')
     })
 })
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//     console.log('Mensajito en add listner:', request)
-//     if (request.action === FETCH_PROFILE_MESSAGES) {
-//         console.log('Fetching profile messages')
-//         getMessagsWithLinkedinUrl(request.data.leadUrl).then((response) => {
-//             sendResponse({ action: FETCH_PROFILE_MESSAGES, ...response })
-//         })
-//     }
-//     return true
-// })
-
-// if (res.status !== 201)
-// return {
-//     action: FETCH_PROFILE_MESSAGES,
-//     status: res.status,
-//     data: { status: 'error', message: 'Ocurrio un error' },
-// }
-// if (res.status === 201) {
-// // Send a message to the content script to confirm the connection
-// return {
-//     action: FETCH_PROFILE_MESSAGES,
-//     status: 200,
-//     data: { status: 'success', messages: res.data.messages },
-// }
-// }
