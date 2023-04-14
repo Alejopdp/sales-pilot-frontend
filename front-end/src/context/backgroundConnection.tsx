@@ -19,16 +19,18 @@ interface IBackgroundConnection {
 
 interface IBackgroundContext {
     connection: IBackgroundConnection | null
+    port: any | null
 }
 
 const BackgroundContext = createContext<IBackgroundContext>({
     connection: null,
+    port: null,
 })
 
-export const useBackgroundConnection = (): IBackgroundConnection | null => {
-    const { connection } = useContext(BackgroundContext)
+export const useBackgroundConnection = (): { connection: IBackgroundConnection | null; port: any | null } => {
+    const { connection, port } = useContext(BackgroundContext)
 
-    return connection
+    return { connection, port }
 }
 
 interface IBackgroundProviderProps {
@@ -41,18 +43,17 @@ const connectionIniitialState: IBackgroundConnection = {
 }
 export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.Element => {
     const [connection, setConnection] = useState<IBackgroundConnection>(connectionIniitialState)
+    const [port, setPort] = useState<any | null>(null)
 
     useEffect(() => {
-        let port: any = null
-
         if (process.env.NODE_ENV !== 'development') {
             try {
                 console.log('Connecting to background...')
                 //@ts-ignore
-                port = chrome.runtime.connect(EXTENSION_ID, { name: 'background' })
+                const port = chrome.runtime.connect(EXTENSION_ID, { name: 'background' })
 
                 setConnection({
-                    send: (message: IMessage) =>
+                    send: (message: IMessage, callback?: () => void) =>
                         new Promise<IBackgroundResponse>((resolve) => {
                             port.postMessage(message)
 
@@ -64,6 +65,7 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
                         }),
                     close: () => port.disconnect(),
                 })
+                setPort(port)
             } catch (error) {
                 console.error('Error connecting to background', error)
             }
@@ -71,11 +73,12 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
 
         return () => {
             if (process.env.NODE_ENV !== 'development') {
+                console.log('Disconnecting from background...')
                 port.disconnect()
                 setConnection(connectionIniitialState)
             }
         }
     }, [])
 
-    return <BackgroundContext.Provider value={{ connection }}>{children}</BackgroundContext.Provider>
+    return <BackgroundContext.Provider value={{ connection, port }}>{children}</BackgroundContext.Provider>
 }

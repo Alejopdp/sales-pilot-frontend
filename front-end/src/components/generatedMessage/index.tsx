@@ -39,6 +39,7 @@ const GeneratedMessage = ({
                         overflow: 'hidden',
                         resize: 'none',
                         flex: 1,
+                        color: '#000',
                     }}
                     onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => resizeTextarea(e)}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleMessageChange(e.target.value)}

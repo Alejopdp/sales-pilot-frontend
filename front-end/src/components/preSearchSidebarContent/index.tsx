@@ -16,11 +16,12 @@ const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
     const { enqueueSnackbar } = useSnackbar()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished } = useApi({
+    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback } = useApi({
         enviroment: process.env.NODE_ENV as 'development' | 'production',
         fail: false,
     })
     const [response, setResponse] = useState<MessageResponse>({
+        messageId: '',
         name: '',
         position: '',
         message: '',
@@ -32,23 +33,28 @@ const PreSearchSidebarContent = () => {
     const { getExperience, getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
+        console.log('triggerMessageSearchAfterSidebarIsOpened')
         const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
         console.log(isBackgroundConnectionEstablished)
         if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
         if (!sidebar) return
+        if (response.message !== '') return
+        setProfileIfScrape()
+        handleSubmit()
 
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes') {
-                    if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-                        setProfileIfScrape()
-                        handleSubmit()
-                    }
-                }
-            })
-        })
+        // const observer = new MutationObserver((mutations) => {
+        //     mutations.forEach((mutation) => {
+        //         if (mutation.type === 'attributes') {
+        //             if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
+        //                 console.log("Sidebar is opened, let's scrape the profile")
+        //                 setProfileIfScrape()
+        //                 handleSubmit()
+        //             }
+        //         }
+        //     })
+        // })
 
-        observer.observe(sidebar, { attributes: true })
+        // observer.observe(sidebar, { attributes: true })
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
@@ -56,6 +62,7 @@ const PreSearchSidebarContent = () => {
     }, [triggerMessageSearchAfterSidebarIsOpened])
 
     const handleSubmit = async () => {
+        console.log('Submitting...')
         setIsSubmitting(true)
         const url =
             process.env.NODE_ENV === 'development' ? 'https://www.linkedin.com/in/damisanchez/' : window.location.href
@@ -80,6 +87,7 @@ const PreSearchSidebarContent = () => {
 
     const fetchMessages = async (profileUrl: string) => {
         try {
+            console.log('Fetching messages...')
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) {
                 enqueueSnackbar(res.data?.message ?? 'Error')
@@ -122,9 +130,11 @@ const PreSearchSidebarContent = () => {
         setResponse({ ...response, message: newMessage })
     }
 
-    const handleFeedback = (isPositive: boolean) => {
-        // TODO: Send feedback
-        setIsFeedbackGranted(true)
+    const handleFeedback = async (isPositive: boolean, comment: string) => {
+        const res = await giveFeedback(response.messageId, isPositive, comment)
+
+        if (res.status !== 200) alert('Error')
+        if (res.status === 200) setIsFeedbackGranted(true)
     }
     return (
         <Box display="flex" flexDirection="column" flex="1" width="100%">

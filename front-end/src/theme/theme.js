@@ -42,6 +42,11 @@ export const theme = createTheme({
         body2: {
             color: '#000000',
         },
+        button: {
+            textTransform: 'none',
+            size: 14,
+            fontWeight: 700,
+        },
     },
     palette: {
         primary: {

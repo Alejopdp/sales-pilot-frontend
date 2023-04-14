@@ -11,3 +11,7 @@ export const PROFILE_NAME_CLASS_SELECTOR = ".text-heading-xlarge.inline.t-24.v-a
 export const PROFILE_POSITION_CLASS_SELECTOR = ".pv-text-details__left-panel .text-body-medium.break-words"
 export const LOCAL_ENV = "development"
 export const IMAGE_HTML_SOURCE_ATRIBUTE = "src"
+export const WS_EVENT_SIGN_IN_SUCCESSFUL = "sign_in_successful"
+export const LOCAL_STORAGE_ACCESS_TOKEN = "sales_pilot_access_token"
+export const FETCH_PROFILE_MESSAGES = "FETCH_PROFILE_MESSAGES"
+export const GIVE_FEEDBACK = "GIVE_FEEDBACK"
