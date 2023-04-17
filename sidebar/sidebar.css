@@ -16,6 +16,7 @@
     transform: translateX(0);
     padding-left: 16px;
     padding-right: 16px;
+    overflow-y: auto;
 }
 
 .sales-pilot-sidebar-inner-container {

@@ -80,7 +80,7 @@ export function closeSidebarOnOutsideClick() {
 
 function createProfileButton() {
     const button = document.createElement('button')
-    button.innerHTML = 'Send Message'
+    button.innerHTML = 'Generar mensaje'
     button.id = SALES_PILOT_PROFILE_BUTTON_ID
     button.addEventListener('click', () => {
         toggleSidebar()
@@ -95,6 +95,7 @@ function addSalesPilotButtonToProfile() {
     if (!anchor) return
     console.log("Anchor found!")
     const button = createProfileButton()
+    button.className = anchor.querySelector("button")?.className ?? ""
     console.log("Profile button created")
     anchor.appendChild(button)
     console.log("Profile button appended to anchor")

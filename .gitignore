@@ -23,6 +23,10 @@
 .env.development.local
 .env.test.local
 .env.production.local
+./front-end/.env.test
+./front-end/.env.production
+packed.crx
+packed/
 
 npm-debug.log*
 yarn-debug.log*

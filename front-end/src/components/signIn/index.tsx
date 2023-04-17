@@ -22,7 +22,7 @@ const SignIn = () => {
                     variant="contained"
                     onClick={handleSignIn}
                     fullWidth
-                    style={{ marginBottom: 16, height: 42 }}
+                    style={{ marginBottom: 16, height: 42, fontSize: 14, backgroundColor: '#2967F6', borderRadius: 60 }}
                     startIcon={<LinkedIn />}
                 >
                     Continuar con Linkedin

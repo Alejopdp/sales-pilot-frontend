@@ -34,12 +34,12 @@ export const giveFeedback = async (messageId, isPositive, comment, access_token)
                 'Content-Type': 'application/json',
                 Authorization: access_token,
             },
-            body: {
+            body: JSON.stringify({
                 isPositive,
                 comment,
-            },
+            }),
         })
-        return { status: res.status }
+        return { status: res.status, data: res.data }
     } catch (error) {
         return { status: res.status, data: { status: 'error', message: 'Ocurrio un error al dar feedback' } }
     }

@@ -11,6 +11,7 @@ import { ThemeProvider } from '@mui/material'
 import { theme } from './theme/theme'
 import { AuthProvider } from './context/auth.context'
 import DevelopmentApp from './App.development'
+import { MessageProvider } from './context/messages.context'
 let root
 console.log('process.env.NODE_ENV: ', process.env.NODE_ENV)
 
@@ -24,13 +25,15 @@ if (process.env.NODE_ENV !== 'development') {
         root.render(
             <ThemeProvider theme={theme}>
                 <BackgroundProvider>
-                    <AuthProvider>
-                        <SnackbarProvider>
-                            <NavigationProvider>
-                                <App />
-                            </NavigationProvider>
-                        </SnackbarProvider>
-                    </AuthProvider>
+                    <MessageProvider>
+                        <AuthProvider>
+                            <SnackbarProvider>
+                                <NavigationProvider>
+                                    <App />
+                                </NavigationProvider>
+                            </SnackbarProvider>
+                        </AuthProvider>
+                    </MessageProvider>
                 </BackgroundProvider>
             </ThemeProvider>
         )
@@ -42,13 +45,15 @@ if (process.env.NODE_ENV !== 'development') {
         <>
             <ThemeProvider theme={theme}>
                 <BackgroundProvider>
-                    <AuthProvider>
-                        <SnackbarProvider>
-                            <NavigationProvider>
-                                <DevelopmentApp />
-                            </NavigationProvider>
-                        </SnackbarProvider>
-                    </AuthProvider>
+                    <MessageProvider>
+                        <AuthProvider>
+                            <SnackbarProvider>
+                                <NavigationProvider>
+                                    <DevelopmentApp />
+                                </NavigationProvider>
+                            </SnackbarProvider>
+                        </AuthProvider>
+                    </MessageProvider>
                 </BackgroundProvider>
             </ThemeProvider>
         </>

@@ -1,4 +1,5 @@
-export const EXTENSION_ID = "enkbjolcglilknggjlngokegcfgpebnl"
+console.log("Extension ID: ", process.env.REACT_APP_EXTENSION_ID)
+export const EXTENSION_ID = process.env.REACT_APP_EXTENSION_ID!
 export const SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR = "div.pvs-profile-actions:not(.pvs-profile-actions--rtl.mr2)"
 export const SALES_PILOT_DOM_CONTAINER_ID = "sales-pilot-dom-container"
 export const SALES_PILOT_SIDEBAR_ID = "sales-pilot-sidebar"
