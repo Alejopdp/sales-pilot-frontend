@@ -3,6 +3,7 @@ import { io } from 'socket.io-client'
 import { LOCAL_STORAGE_ACCESS_TOKEN, VALIDATE_SESSION, WS_EVENT_SIGN_IN_SUCCESSFUL } from '../constants'
 import axios from 'axios'
 import { useBackgroundConnection } from './backgroundConnection'
+import { useMessageStore } from './messages.context'
 
 type AuthContextType = {
     handleSignIn: () => void
@@ -20,6 +21,7 @@ export const AuthContext = React.createContext<AuthContextType>(AuthContextIniti
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { connection, port } = useBackgroundConnection()
+    const { queue, setQueue } = useMessageStore()
     const [isAuthenticating, setIsAuthenticating] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -44,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (res.status === 200) {
                 setIsAuthenticating(false)
                 setIsAuthenticated(true)
+                setQueue(['scrape'])
             }
         } catch (error) {
             setIsAuthenticating(false)
@@ -88,6 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token) //TODO: Magic String
                     setIsAuthenticating(false)
                     setIsAuthenticated(true)
+                    setQueue(['scrape'])
                 }
             }
         })
@@ -97,8 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         window
             .open(
-                `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.REACT_APP_LINKEDIN_CLIENT_ID}&redirect_uri=${redirect_uri}&state=${res.data.socketId}&scope=r_liteprofile%20r_emailaddress`,
-                '_blank'
+                `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.REACT_APP_LINKEDIN_CLIENT_ID}&redirect_uri=${redirect_uri}&state=${res.data.socketId}&scope=r_liteprofile%20r_emailaddress`
             )
             ?.focus()
     }
@@ -115,6 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, event.access_token)
                 setIsAuthenticating(false)
                 setIsAuthenticated(true)
+                setQueue(['scrape'])
             })
 
             const redirect_uri = `${process.env.REACT_APP_API_URL}/auth/sign-in`

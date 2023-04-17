@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { useBackgroundConnection } from '../context/backgroundConnection'
 import { MessageResponse } from '../types'
@@ -61,7 +61,7 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
         if (process.env.NODE_ENV !== 'development') {
             if (!connection || connection?.send === null)
                 throw new Error('Connection to background not yet establsihed')
-
+            console.log('Send to background: ', messageId)
             const res = await connection.send({
                 action: 'GIVE_FEEDBACK',
                 data: {
@@ -74,14 +74,20 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
 
             return res
         } else {
-            return {
-                status: SUCCESS_STATUS,
-                data: {
-                    avatar: '/asd',
-                    name: 'Max Carlucho',
-                    position: 'Co fouonder and CRO of novolabs',
-                    message: TEST_MESSAGE,
-                },
+            try {
+                const res = await axios.put(
+                    `${process.env.REACT_APP_API_URL}/linkedin/give-feedback/${messageId}`,
+                    { messageId, isPositive, comment },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            authorization: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)!,
+                        },
+                    }
+                )
+                return { status: res.status, data: res.data }
+            } catch (error: any) {
+                return { status: 500, data: { status: 'error', message: error.message } }
             }
         }
     }

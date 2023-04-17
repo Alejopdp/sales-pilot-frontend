@@ -8,9 +8,9 @@ import GeneratedMessage from '../generatedMessage'
 import { useNavigation } from '../../context/navigation'
 import useLinkedinScraper from '../../hooks/useLinkedinScraper'
 import Feedback from '../feedback'
-import { MessageResponse } from '../../types'
 import { SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from '../../constants'
 import ProfileInSidebar from '../profileInSidebar'
+import { useMessageStore } from '../../context/messages.context'
 
 const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
@@ -20,32 +20,32 @@ const PreSearchSidebarContent = () => {
         enviroment: process.env.NODE_ENV as 'development' | 'production',
         fail: false,
     })
-    const [response, setResponse] = useState<MessageResponse>({
-        messageId: '',
-        name: '',
-        position: '',
-        message: '',
-        avatar: '',
-        lastUrl: '',
-    })
+    const { response, setResponse, queue, setQueue } = useMessageStore()
     const [isLoadingTryingAgain, setIsLoadingTryingAgain] = useState(false)
     const { selectedProfile, setSelectedProfile } = useNavigation()
+    const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
-    const { getExperience, getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
+    const { getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
         console.log('triggerMessageSearchAfterSidebarIsOpened')
         console.log('isBackgroundConnectionEstablished:', isBackgroundConnectionEstablished)
         if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
-        console.log('Response last url: ', response)
-        console.log('Window location: ', window.location.href)
-        if (response.lastUrl === window.location.href && response.message !== '') return
+        // TODO: Make a function of reinit
+        setIsFeedbackGranted(false)
         setProfileIfScrape()
         handleSubmit()
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
-        if (!isBackgroundConnectionEstablished) return
+        if (!isBackgroundConnectionEstablished && process.env.NODE_ENV !== 'development') return
+        console.log('Has connection, and is auth')
+        console.log('QUeue: ', queue)
+        if (queue[0] !== undefined) {
+            setQueue(queue.slice(1))
+            triggerMessageSearchAfterSidebarIsOpened()
+        }
+
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 console.log('Mutation')
@@ -58,6 +58,10 @@ const PreSearchSidebarContent = () => {
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
                         console.log("Sidebar is opened, let's scrape the profile")
+                        console.log('Response last url: ', response)
+                        console.log('Window location: ', window.location.href)
+                        if (response.lastUrl === window.location.href && response.message !== '') return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
+
                         triggerMessageSearchAfterSidebarIsOpened()
                     }
                 }
@@ -68,8 +72,9 @@ const PreSearchSidebarContent = () => {
 
         return () => {
             console.log('Sidebar unmounted, last resposne state: ', response)
+            observer.disconnect()
         }
-    }, [triggerMessageSearchAfterSidebarIsOpened])
+    }, [triggerMessageSearchAfterSidebarIsOpened, response, queue])
 
     const handleSubmit = async () => {
         console.log('Submitting...')
@@ -103,7 +108,7 @@ const PreSearchSidebarContent = () => {
                 enqueueSnackbar(res.data?.message ?? 'Error')
                 throw new Error('Respuesta no exitosa')
             }
-
+            console.log('Setting response: ', res.data)
             setResponse({ ...res.data, message: res.data.message, lastUrl: profileUrl })
         } catch (error) {
             console.log(error)
@@ -141,10 +146,13 @@ const PreSearchSidebarContent = () => {
     }
 
     const handleFeedback = async (isPositive: boolean, comment: string) => {
+        setIsFeedbackSubmitting(true)
+        console.log('Making request: ', response.messageId)
         const res = await giveFeedback(response.messageId, isPositive, comment)
 
         if (res.status !== 200) alert('Error')
         if (res.status === 200) setIsFeedbackGranted(true)
+        setIsFeedbackSubmitting(false)
     }
     return (
         <Box display="flex" flexDirection="column" flex="1" width="100%">
@@ -172,7 +180,11 @@ const PreSearchSidebarContent = () => {
                 <>
                     <GeneratedMessage message={response.message} handleMessageChange={handleMessageChange} />
                     <Box marginTop="auto" marginBottom={5}>
-                        <Feedback isFeedbackGranted={isFeedbackGranted} handleFeedback={handleFeedback} />
+                        <Feedback
+                            isFeedbackGranted={isFeedbackGranted}
+                            handleFeedback={handleFeedback}
+                            isFeedbackSubmitting={isFeedbackSubmitting}
+                        />
                     </Box>
                 </>
             )}

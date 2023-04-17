@@ -34,11 +34,7 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                         data: {
                             status: res.status,
                             data: {
-                                id: res.data.messageId,
-                                message: res.data.message,
-                                avatar: res.data.avatar,
-                                name: res.data.name,
-                                position: res.data.position,
+                                ...res.data,
                             },
                         },
                     })
@@ -104,12 +100,12 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                 )
                 console.log('Message res: ', feedback_res)
 
-                if (feedback_res.status !== 201)
+                if (feedback_res.status !== 200)
                     port.postMessage({
                         action: GIVE_FEEDBACK,
                         data: { status: feedback_res.status, data: { message: 'Ocurrio un error' } },
                     })
-                if (res.status === 201) {
+                if (feedback_res.status === 200) {
                     port.postMessage({
                         action: GIVE_FEEDBACK,
                         data: {
