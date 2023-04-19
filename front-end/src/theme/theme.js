@@ -56,4 +56,30 @@ export const theme = createTheme({
             main: green[500],
         },
     },
+    components: {
+        MuiTextField: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: 'rgb(243, 242, 239)',
+                    borderWidth: 0,
+                    fontSize: 14,
+                    borderRadius: 8,
+                },
+            },
+        },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                // Remove the border
+                notchedOutline: {
+                    borderWidth: 0,
+                },
+                // When the input is focused or active, change the color of the border to #000
+                root: {
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: '#000',
+                    },
+                },
+            },
+        },
+    },
 })

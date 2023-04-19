@@ -78,7 +78,6 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                                         style={{
                                             height: 42,
                                             fontSize: 14,
-                                            backgroundColor: '#2967F6',
                                             borderRadius: 60,
                                         }} //TODO: Make a component for styles or add it to the theme
                                         startIcon={<Send />}
