@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Box, Button } from '@mui/material'
-import { useSnackbar } from 'notistack'
 import FileCopyIcon from '@mui/icons-material/FileCopy'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 function resizeTextarea(event: any) {
     event.target.style.height = 'auto'
@@ -15,15 +15,21 @@ const GeneratedMessage = ({
     message: string
     handleMessageChange: (newMessage: string) => void
 }) => {
-    const { enqueueSnackbar } = useSnackbar()
+    const [wasCopied, setWasCopied] = React.useState(false)
 
     useEffect(() => {
         resizeTextarea({ target: document.querySelector('textarea') })
     }, [message])
 
     const handleCopyMessage = async (message: string) => {
-        enqueueSnackbar('Mensaje copiado', { variant: 'success' })
+        if (wasCopied) return
+        setWasCopied(true)
         navigator.clipboard.writeText(message)
+
+        window.setTimeout(() => {
+            setWasCopied(false)
+        }, 3000)
+        // Save event in DB
     }
 
     return (
@@ -45,14 +51,20 @@ const GeneratedMessage = ({
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleMessageChange(e.target.value)}
                 />
             </Box>
+
             <Button
                 variant="contained"
                 onClick={() => handleCopyMessage(message)}
-                style={{ height: 42, fontSize: 14, backgroundColor: '#2967F6', borderRadius: 60 }}
-                startIcon={<FileCopyIcon />}
+                style={{
+                    height: 42,
+                    fontSize: 14,
+                    backgroundColor: wasCopied ? '#00A642' : '#2967F6',
+                    borderRadius: 60,
+                }}
+                startIcon={wasCopied ? <CheckCircleIcon /> : <FileCopyIcon />}
                 fullWidth
             >
-                Copiar mensaje
+                {wasCopied ? 'Texto copiado en portapapeles' : 'Copiar mensaje'}
             </Button>
         </Box>
     )

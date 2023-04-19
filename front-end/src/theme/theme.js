@@ -62,7 +62,6 @@ export const theme = createTheme({
                 root: {
                     backgroundColor: 'rgb(243, 242, 239)',
                     borderWidth: 0,
-                    fontSize: 14,
                     borderRadius: 8,
                 },
             },
@@ -75,6 +74,9 @@ export const theme = createTheme({
                 },
                 // When the input is focused or active, change the color of the border to #000
                 root: {
+                    fontSize: 14,
+                    fontWeight: 400,
+
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#000',
                     },
