@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap"
+            rel="stylesheet"
+        />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            body {
+                font-family: 'DM Sans', sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            .modal {
+                display: flex;
+                flex-direction: column;
+                width: 400px;
+                background-color: white;
+                border-radius: 5px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 16px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .title {
+                text-align: center;
+                font-size: 16px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+            .subtitle {
+                text-align: center;
+                font-size: 14px;
+                font-weight: 400;
+                margin-bottom: 24px;
+                color: #424242;
+            }
+            ol {
+                padding-left: 24px;
+            }
+            li {
+                margin-bottom: 16px;
+                font-size: 16px;
+                font-weight: 500;
+                color: #000;
+            }
+            li img {
+                display: block;
+                margin: 8px auto;
+                /* width: 80%; */
+            }
+            .footer {
+                text-align: center;
+                font-size: 14px;
+                margin-top: 16px;
+                color: #424242;
+            }
+
+            .icon-button {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                background-color: transparent;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                padding: 0;
+                position: relative;
+            }
+            .icon-button:hover {
+                background-color: rgba(0, 0, 0, 0.08);
+            }
+            .icon-button:active {
+                background-color: rgba(0, 0, 0, 0.12);
+            }
+            .icon-button:before,
+            .icon-button:after {
+                content: '';
+                background-color: black;
+                width: 16px;
+                height: 2px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+            }
+            .icon-button:before {
+                transform: translate(-50%, -50%) rotate(45deg);
+            }
+            .icon-button:after {
+                transform: translate(-50%, -50%) rotate(-45deg);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="modal">
+            <div class="header">
+                <img src="./sales-pilot-logo.png" alt="Logo de mi app" width="181px" height="38px" />
+            </div>
+            <h2 class="title">Hola 👋 Te damos la bienvenida a SalesPilot</h2>
+            <h3 class="subtitle">Para utilizar la herramienta debes seguir las siguientes instrucciones:</h3>
+            <ol>
+                <li>Ingresas a LinkedIn</li>
+                <li>
+                    Ingresas al perfil del prospecto con el que te gustaría reunirte y haces click en "Generar Mensaje".
+                    <img src="./modal_1.png" alt="Imagen 1" width="214px" height="126px" />
+                </li>
+                <li>
+                    Copias el mensaje y se lo envías. Luego vas por tu café y estiras las piernas mientras esperas su
+                    respuesta.
+                    <img src="./modal_2.png" alt="Imagen 2" width="198px" height="187px" />
+                </li>
+            </ol>
+            <div class="footer">
+                <p>¿Te has quedado con dudas?</p>
+                <p>Puedes escribirnos a <a href="mailto:hola@salespilot.app">hola@salespilot.app</a></p>
+            </div>
+        </div>
+    </body>
+</html>

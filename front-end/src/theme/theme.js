@@ -47,6 +47,7 @@ export const theme = createTheme({
             size: 14,
             fontWeight: 700,
         },
+        fontFamily: "'DM Sans', sans-serif;",
     },
     palette: {
         primary: {

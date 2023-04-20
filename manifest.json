@@ -1,6 +1,6 @@
 {
     "name": "Sales Pilot",
-    "version": "1.0",
+    "version": "1.0.1",
     "manifest_version": 3,
     "content_scripts": [
         {
@@ -17,6 +17,9 @@
     "content_security_policy": {
         "extension_pages": "script-src 'self'; connect-src ws://api.salespilot.app ws://api.development.salespilot.app https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com; object-src 'self'"
     },
+    "action": {
+        "default_popup": "./public/popup.html"
+    },
     "web_accessible_resources": [
         {
             "resources": ["/sidebar/sidebar.css", "/sidebar/index.html", "/react/js/*", "/background.js"],
@@ -24,7 +27,11 @@
         }
     ],
     "externally_connectable": {
-        "ids": ["enkbjolcglilknggjlngokegcfgpebnl", "peogaapbhegpkmhkjdbdggalfjlipfnp"],
+        "ids": [
+            "enkbjolcglilknggjlngokegcfgpebnl",
+            "peogaapbhegpkmhkjdbdggalfjlipfnp",
+            "bdogiafgildacfheaaenopoofinjknkb"
+        ],
         "matches": ["https://*.linkedin.com/*"]
     }
 }

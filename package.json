@@ -10,7 +10,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build:unpacked": "npx webpack && cd ./front-end && npm run build:unpacked && cd ..",
-        "build:packed": "npx webpack && cd ./front-end && npm run build:packed && cd ../ && cp -Rf ./dist ./react ./sidebar ./bg-wrapper.js ./manifest.json ./packed/",
+        "build:packed": "npx webpack && cd ./front-end && npm run build:packed && cd ../ && cp -Rf ./dist ./react ./sidebar ./bg-wrapper.js ./manifest.json ./packed/ ./public/",
         "build": "npm run build:unpacked",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
