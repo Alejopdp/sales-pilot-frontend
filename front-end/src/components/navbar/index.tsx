@@ -3,6 +3,7 @@ import SalesPilotLogo from '../../assets/sales-pilot-logo.png'
 import { toggleSidebar } from '../../initialize-extension'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, IconButton } from '@mui/material'
+// const SalesPilotLogo = require('../../assets/sales-pilot-logo.png').default
 
 const Navbar = () => {
     return (

@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 
 const buildFolder = path.join(__dirname, 'build', 'static', 'js')
+const mediaSourceFolder = path.join(__dirname, 'build', 'static', 'media')
 const targetFolder = path.join(__dirname, '..', 'react', 'js')
 
 if (!fs.existsSync(targetFolder)) {
@@ -29,8 +30,31 @@ function removeOldMainFile() {
         })
     })
 }
+function moveMediaFiles() {
+    fs.readdir(mediaSourceFolder, (err, files) => {
+        if (err) {
+            console.error(err)
+            return
+        }
+
+        files.forEach((file) => {
+            const sourcePath = path.join(mediaSourceFolder, file)
+            const targetPath = path.join(targetFolder, file)
+
+            fs.rename(sourcePath, targetPath, (err) => {
+                if (err) {
+                    console.error(err)
+                    return
+                }
+
+                console.log(`Moved ${file} to ${targetFolder}`)
+            })
+        })
+    })
+}
 
 removeOldMainFile()
+moveMediaFiles()
 
 fs.readdir(buildFolder, (err, files) => {
     if (err) {

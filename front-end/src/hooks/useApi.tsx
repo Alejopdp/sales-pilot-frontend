@@ -28,7 +28,7 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
 
     const getMessagsWithLinkedinUrl = async (
         leadUrl: string
-    ): Promise<Pick<AxiosResponse<MessageResponse>, 'data' | 'status'>> => {
+    ): Promise<Pick<AxiosResponse<MessageResponse | { message: string }>, 'data' | 'status'>> => {
         if (process.env.NODE_ENV !== 'development') {
             if (!connection || connection?.send === null)
                 throw new Error('Connection to background not yet establsihed')
@@ -43,17 +43,22 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
 
             return res
         } else {
-            return {
-                status: SUCCESS_STATUS,
-                data: {
-                    messageId: 'asd',
-                    avatar: '/asd',
-                    name: 'Max Carlucho',
-                    position: 'Co fouonder and CRO of novolabs',
-                    message: TEST_MESSAGE,
-                    lastUrl: 'https://www.linkedin.com/in/maxcarlucho/',
-                },
-            }
+            return SUCCESS_STATUS === 201
+                ? {
+                      status: SUCCESS_STATUS,
+                      data: {
+                          messageId: 'asd',
+                          avatar: '/asd',
+                          name: 'Max Carlucho',
+                          position: 'Co fouonder and CRO of novolabs',
+                          message: TEST_MESSAGE,
+                          lastUrl: 'https://www.linkedin.com/in/maxcarlucho/',
+                      },
+                  }
+                : {
+                      status: 429,
+                      data: { message: 'Alcanzaste tu limite de mensajes por mes' },
+                  }
         }
     }
 

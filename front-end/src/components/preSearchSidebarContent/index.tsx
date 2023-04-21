@@ -11,6 +11,7 @@ import Feedback from '../feedback'
 import { SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from '../../constants'
 import ProfileInSidebar from '../profileInSidebar'
 import { useMessageStore } from '../../context/messages.context'
+import { MessageResponse } from '../../types'
 
 const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
@@ -105,11 +106,10 @@ const PreSearchSidebarContent = () => {
             console.log('Fetching messages...')
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) {
-                enqueueSnackbar(res.data?.message ?? 'Error')
-                throw new Error('Respuesta no exitosa')
+                setError(res.data.message)
             }
-            console.log('Setting response: ', res.data)
-            setResponse({ ...res.data, message: res.data.message, lastUrl: profileUrl })
+            const data = res.data as MessageResponse
+            setResponse({ ...data, message: data.message, lastUrl: profileUrl })
         } catch (error) {
             console.log(error)
             setError('No se encontraron mensajes')
@@ -147,7 +147,6 @@ const PreSearchSidebarContent = () => {
 
     const handleFeedback = async (isPositive: boolean, comment: string) => {
         setIsFeedbackSubmitting(true)
-        console.log('Making request: ', response.messageId)
         const res = await giveFeedback(response.messageId, isPositive, comment)
 
         if (res.status !== 200) alert('Error')
@@ -164,11 +163,7 @@ const PreSearchSidebarContent = () => {
                 />
             )}
             {error ? (
-                <EmptyState
-                    title="No encontramos mensajes"
-                    subtitle="Revisa que la URL ingresada sea de un usuario existente"
-                    handler={() => tryAgain('')}
-                />
+                <EmptyState title={error} subtitle="" />
             ) : isSubmitting ? (
                 <Box width="100%" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
                     <CircularProgress size={16} />
