@@ -26,14 +26,7 @@
     },
     "web_accessible_resources": [
         {
-            "resources": [
-                "/sidebar/sidebar.css",
-                "/sidebar/index.html",
-                "/react/*",
-                "/background.js",
-                "/public/*",
-                "/react/js/*"
-            ],
+            "resources": ["/sidebar/sidebar.css", "/sidebar/index.html", "/react/*", "/background.js"],
             "matches": ["https://*.linkedin.com/*", "https://*.cloudfunctions.net/*"]
         }
     ],
