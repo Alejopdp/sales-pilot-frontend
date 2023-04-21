@@ -26,7 +26,7 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                 if (res.status !== 201)
                     port.postMessage({
                         action: FETCH_PROFILE_MESSAGES,
-                        data: { status: res.status, data: { message: 'Ocurrio un error' } },
+                        data: { status: res.status, data: { message: res.data.message } },
                     })
                 if (res.status === 201) {
                     port.postMessage({
