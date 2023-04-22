@@ -19,10 +19,7 @@ const GeneratedMessage = ({
     messageId: string
 }) => {
     const [wasCopied, setWasCopied] = React.useState(false)
-    const { saveCopiedMessage } = useApi({
-        enviroment: process.env.NODE_ENV as 'development' | 'production',
-        fail: false,
-    })
+    const { saveCopiedMessage } = useApi()
 
     useEffect(() => {
         resizeTextarea({ target: document.querySelector('textarea') })
@@ -36,7 +33,6 @@ const GeneratedMessage = ({
         window.setTimeout(() => {
             setWasCopied(false)
         }, 3000)
-        // Save event in DB
         saveCopiedMessage(messageId, message)
     }
 

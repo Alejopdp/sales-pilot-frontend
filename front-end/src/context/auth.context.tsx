@@ -21,7 +21,7 @@ export const AuthContext = React.createContext<AuthContextType>(AuthContextIniti
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { connection, port } = useBackgroundConnection()
-    const { queue, setQueue } = useMessageStore()
+    const { setQueue } = useMessageStore()
     const [isAuthenticating, setIsAuthenticating] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    //TODO: Change environment logic
     const validateAccessTokenDevelopmentRes = async (access_token: string) => {
         return await axios.get(`${process.env.REACT_APP_API_URL}/auth/validate-session`, {
             headers: { authorization: access_token },
@@ -62,12 +61,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const validateAccessTokenProductionRes = async (access_token: string) => {
-        console.log('Validating token in prod')
-        if (connection === null) return { status: 500 }
-        console.log('Sending request...')
-        //@ts-ignore
+        if (connection === null || connection.send === null) return { status: 500 }
         const res = await connection.send({ action: VALIDATE_SESSION, data: { access_token } })
-        console.log('Res validate: ', res)
         return res
     }
     const handleSignIn = () => {
@@ -82,10 +77,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticating(true)
         const redirect_uri = `${process.env.REACT_APP_API_URL}/auth/sign-in`
 
-        if (connection === null) return
+        if (connection === null || connection.send === null) return
         port.onMessage.addListener((message: any, port: any) => {
             // TODO: REmove listener after sign in
-            console.log('Successful message: ', message)
             if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
                 if (message.data.status === 200) {
                     window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token) //TODO: Magic String
@@ -95,7 +89,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 }
             }
         })
-        //@ts-ignore
         const res = await connection.send({ action: 'SIGN_IN' })
         console.log('RESPONSE: ', res)
 
@@ -114,7 +107,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setIsAuthenticating(true)
 
             socket.on(WS_EVENT_SIGN_IN_SUCCESSFUL, (event) => {
-                console.log('sign_in_successful: ', event)
                 window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, event.access_token)
                 setIsAuthenticating(false)
                 setIsAuthenticated(true)

@@ -18,7 +18,7 @@ interface NavigationContext {
     setSelectedProfile: (profile: Profile | null) => void
 }
 
-const NavigationContext = createContext<NavigationContext>({
+const navigationContext = createContext<NavigationContext>({
     route: 'home',
     setRoute: (newRoute: NavigationRoute) => '',
     profiles: [],
@@ -64,7 +64,7 @@ const initialProfilesState = [
 
 export const useNavigation = (): NavigationContext => {
     const { profiles, selectedProfile, route, setProfiles, setSelectedProfile, setRoute } =
-        useContext(NavigationContext)
+        useContext(navigationContext)
 
     return { profiles, selectedProfile, route, setProfiles, setSelectedProfile, setRoute }
 }
@@ -82,10 +82,10 @@ export const NavigationProvider = ({ children }: NavigationProviderProps): JSX.E
     }, [])
 
     return (
-        <NavigationContext.Provider
+        <navigationContext.Provider
             value={{ route, setRoute, profiles, setProfiles, selectedProfile, setSelectedProfile }}
         >
             {children}
-        </NavigationContext.Provider>
+        </navigationContext.Provider>
     )
 }

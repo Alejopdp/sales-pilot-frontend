@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import { isALinkedinProfile, isLinkedInURL } from '../../helpers'
-import { useSnackbar } from 'notistack'
 import useApi from '../../hooks/useApi'
 import EmptyState from '../emptyState/emptyState'
 import GeneratedMessage from '../generatedMessage'
@@ -15,12 +14,8 @@ import { MessageResponse } from '../../types'
 
 const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
-    const { enqueueSnackbar } = useSnackbar()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback } = useApi({
-        enviroment: process.env.NODE_ENV as 'development' | 'production',
-        fail: false,
-    })
+    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback } = useApi()
     const { response, setResponse, queue, setQueue } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
@@ -28,7 +23,7 @@ const PreSearchSidebarContent = () => {
     const { getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
-        if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
+        if (!isBackgroundConnectionEstablished) return
         // TODO: Make a function of reinit
         setIsFeedbackGranted(false)
         setProfileIfScrape()
@@ -36,7 +31,7 @@ const PreSearchSidebarContent = () => {
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
-        if (!isBackgroundConnectionEstablished && process.env.NODE_ENV !== 'development') return
+        if (!isBackgroundConnectionEstablished) return
         console.log('QUeue: ', queue)
         if (queue[0] !== undefined) {
             setQueue(queue.slice(1))
@@ -67,10 +62,8 @@ const PreSearchSidebarContent = () => {
     }, [triggerMessageSearchAfterSidebarIsOpened, response, queue])
 
     const handleSubmit = async () => {
-        console.log('Submitting...')
         setIsSubmitting(true)
-        const url =
-            process.env.NODE_ENV === 'development' ? 'https://www.linkedin.com/in/damisanchez/' : window.location.href
+        const url = window.location.href
 
         if (!isLinkedInURL(url)) {
             setError('La URL ingresada no es de Linkedin')
@@ -92,7 +85,6 @@ const PreSearchSidebarContent = () => {
 
     const fetchMessages = async (profileUrl: string) => {
         try {
-            console.log('Fetching messages...')
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) {
                 setError(res.data.message)

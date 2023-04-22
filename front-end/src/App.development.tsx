@@ -19,7 +19,6 @@ function toggleSidebar() {
 function DevelopmentApp() {
     const { handleSignIn, isAuthenticating, isAuthenticated } = useAuth()
 
-    console.log('IS authenticated: ', isAuthenticated)
     return (
         <>
             <button

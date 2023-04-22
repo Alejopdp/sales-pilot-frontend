@@ -69,11 +69,9 @@ export const theme = createTheme({
         },
         MuiOutlinedInput: {
             styleOverrides: {
-                // Remove the border
                 notchedOutline: {
                     borderWidth: 0,
                 },
-                // When the input is focused or active, change the color of the border to #000
                 root: {
                     fontSize: 14,
                     fontWeight: 400,
