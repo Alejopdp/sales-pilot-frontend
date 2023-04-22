@@ -97,7 +97,41 @@ const useApi = ({ enviroment, fail }: useApiProps) => {
         }
     }
 
-    return { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback }
+    const saveCopiedMessage = async (messageId: string, copiedMessage: string) => {
+        if (process.env.NODE_ENV !== 'development') {
+            if (!connection || connection?.send === null)
+                throw new Error('Connection to background not yet establsihed')
+            console.log('Send to background: ', messageId)
+            const res = await connection.send({
+                action: 'SAVE_COPIED_MESSAGE',
+                data: {
+                    messageId,
+                    copiedMessage,
+                    access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
+                },
+            })
+
+            return res
+        } else {
+            try {
+                const res = await axios.put(
+                    `${process.env.REACT_APP_API_URL}/linkedin/save-copied-message/${messageId}`,
+                    { copiedMessage },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            authorization: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)!,
+                        },
+                    }
+                )
+                return { status: res.status, data: res.data }
+            } catch (error: any) {
+                return { status: 500, data: { status: 'error', message: error.message } }
+            }
+        }
+    }
+
+    return { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, saveCopiedMessage }
 }
 
 export default useApi

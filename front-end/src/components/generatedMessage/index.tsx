@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Box, Button } from '@mui/material'
 import FileCopyIcon from '@mui/icons-material/FileCopy'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import useApi from '../../hooks/useApi'
 
 function resizeTextarea(event: any) {
     event.target.style.height = 'auto'
@@ -11,11 +12,17 @@ function resizeTextarea(event: any) {
 const GeneratedMessage = ({
     message,
     handleMessageChange,
+    messageId,
 }: {
     message: string
     handleMessageChange: (newMessage: string) => void
+    messageId: string
 }) => {
     const [wasCopied, setWasCopied] = React.useState(false)
+    const { saveCopiedMessage } = useApi({
+        enviroment: process.env.NODE_ENV as 'development' | 'production',
+        fail: false,
+    })
 
     useEffect(() => {
         resizeTextarea({ target: document.querySelector('textarea') })
@@ -30,6 +37,7 @@ const GeneratedMessage = ({
             setWasCopied(false)
         }, 3000)
         // Save event in DB
+        saveCopiedMessage(messageId, message)
     }
 
     return (

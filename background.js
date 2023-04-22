@@ -1,12 +1,14 @@
+/* eslint-disable default-case */
 import { io } from 'socket.io-client'
 import {
     FETCH_PROFILE_MESSAGES,
     GIVE_FEEDBACK,
+    SAVE_COPIED_MESSAGE,
     SIGN_IN,
     VALIDATE_SESSION,
     WS_EVENT_SIGN_IN_SUCCESSFUL,
 } from './api_actions'
-import { getMessagsWithLinkedinUrl, giveFeedback, validateSession } from './requests'
+import { getMessagsWithLinkedinUrl, giveFeedback, saveCopiedMessage, validateSession } from './requests'
 
 chrome.runtime.onConnectExternal.addListener((newPort) => {
     console.log('On connect listener')
@@ -113,6 +115,30 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                         },
                     })
                 }
+                break
+            case SAVE_COPIED_MESSAGE:
+                const save_copied_message_res = await saveCopiedMessage(
+                    message.data.messageId,
+                    message.data.copiedMessage,
+                    message.data.access_token
+                )
+                console.log('COPIED MESSAGE RES: ', save_copied_message_res)
+
+                if (save_copied_message_res.status !== 200) {
+                    port.postMessage({
+                        action: SAVE_COPIED_MESSAGE,
+                        data: {
+                            status: save_copied_message_res.status,
+                            data: { message: save_copied_message_res.data.message },
+                        },
+                    })
+                } else {
+                    port.postMessage({
+                        action: SAVE_COPIED_MESSAGE,
+                        data: { status: save_copied_message_res.status, data: undefined },
+                    })
+                }
+
                 break
         }
     })

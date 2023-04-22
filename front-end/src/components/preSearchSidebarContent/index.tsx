@@ -22,15 +22,12 @@ const PreSearchSidebarContent = () => {
         fail: false,
     })
     const { response, setResponse, queue, setQueue } = useMessageStore()
-    const [isLoadingTryingAgain, setIsLoadingTryingAgain] = useState(false)
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
     const { getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
-        console.log('triggerMessageSearchAfterSidebarIsOpened')
-        console.log('isBackgroundConnectionEstablished:', isBackgroundConnectionEstablished)
         if (!isBackgroundConnectionEstablished && process.env.NODE_ENV === 'production') return
         // TODO: Make a function of reinit
         setIsFeedbackGranted(false)
@@ -40,7 +37,6 @@ const PreSearchSidebarContent = () => {
 
     useEffect(() => {
         if (!isBackgroundConnectionEstablished && process.env.NODE_ENV !== 'development') return
-        console.log('Has connection, and is auth')
         console.log('QUeue: ', queue)
         if (queue[0] !== undefined) {
             setQueue(queue.slice(1))
@@ -49,18 +45,12 @@ const PreSearchSidebarContent = () => {
 
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                console.log('Mutation')
                 //@ts-ignore
                 if (mutation.target.id === SALES_PILOT_SIDEBAR_ID) {
-                    console.log('Mutation was on sales pilot sidebar')
                     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
                     if (!sidebar) return
-                    console.log('Sidebar exists')
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-                        console.log("Sidebar is opened, let's scrape the profile")
-                        console.log('Response last url: ', response)
-                        console.log('Window location: ', window.location.href)
                         if (response.lastUrl === window.location.href && response.message !== '') return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
 
                         triggerMessageSearchAfterSidebarIsOpened()
@@ -72,7 +62,6 @@ const PreSearchSidebarContent = () => {
         observer.observe(document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)!, { attributes: true })
 
         return () => {
-            console.log('Sidebar unmounted, last resposne state: ', response)
             observer.disconnect()
         }
     }, [triggerMessageSearchAfterSidebarIsOpened, response, queue])
@@ -118,19 +107,6 @@ const PreSearchSidebarContent = () => {
         setIsSubmitting(false)
     }
 
-    const tryAgain = async (profileUrl: string) => {
-        setIsLoadingTryingAgain(true)
-        try {
-            const res = await getMessagsWithLinkedinUrl(profileUrl)
-            if (res.status !== 201) enqueueSnackbar(res.data?.message ?? 'Error')
-
-            setResponse({ ...response, message: res.data.message })
-        } catch (error) {
-            console.log('Error: ', error)
-        }
-        setIsLoadingTryingAgain(false)
-    }
-
     const setProfileIfScrape = () => {
         setSelectedProfile({
             about: getPositon(), // TODO: Check if its ok the position or about
@@ -173,7 +149,11 @@ const PreSearchSidebarContent = () => {
                 </Box>
             ) : (
                 <>
-                    <GeneratedMessage message={response.message} handleMessageChange={handleMessageChange} />
+                    <GeneratedMessage
+                        messageId={response.messageId}
+                        message={response.message}
+                        handleMessageChange={handleMessageChange}
+                    />
                     <Box marginTop="auto" marginBottom={5}>
                         <Feedback
                             isFeedbackGranted={isFeedbackGranted}
