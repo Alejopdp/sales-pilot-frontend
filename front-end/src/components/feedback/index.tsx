@@ -37,14 +37,13 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                             <>
                                 <Box display="flex" flexDirection="column" alignItems="center" marginRight={2}>
                                     <FontAwesomeIcon
-                                        // icon={faThumbsDown}
                                         icon={
                                             showNegativeFeedbackInput || isNegativeFeedbackHovered
                                                 ? faThumbsDownSolid
                                                 : faThumbsDown
                                         }
                                         size="2x"
-                                        className={`"fa-icon fa-thumbs-down"${
+                                        className={`fa-icon fa-thumbs-down${
                                             showNegativeFeedbackInput ? ' fa-thumbs-down-selected' : ''
                                         }`}
                                         onMouseEnter={() => setIsNegativeFeedbackHovered(true)}
