@@ -80,17 +80,24 @@ textarea {
 
 .fa-icon {
     cursor: pointer;
+    color: #424242;
 }
 
 /* Write a hover effect that gives color to the font awesome light icon thumbs up. It should colour the icon when the mouse hovers over it and make a little shake effect */
 .fa-thumbs-up:hover {
-    color: rgb(41, 103, 246);
+    cursor: pointer;
+    color: #00a642;
     animation: shake 0.5s;
     animation-iteration-count: infinite;
 }
 
 .fa-thumbs-down:hover {
-    color: red;
+    cursor: pointer;
+    color: #ba0000;
     animation: shake 0.5s;
     animation-iteration-count: infinite;
+}
+
+.fa-thumbs-down-selected {
+    color: #ba0000;
 }

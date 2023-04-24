@@ -30,31 +30,31 @@ function removeOldMainFile() {
         })
     })
 }
-function moveMediaFiles() {
-    fs.readdir(mediaSourceFolder, (err, files) => {
-        if (err) {
-            console.error(err)
-            return
-        }
+// function moveMediaFiles() {
+//     fs.readdir(mediaSourceFolder, (err, files) => {
+//         if (err) {
+//             console.error(err)
+//             return
+//         }
 
-        files.forEach((file) => {
-            const sourcePath = path.join(mediaSourceFolder, file)
-            const targetPath = path.join(targetFolder, file)
+//         files.forEach((file) => {
+//             const sourcePath = path.join(mediaSourceFolder, file)
+//             const targetPath = path.join(targetFolder, file)
 
-            fs.rename(sourcePath, targetPath, (err) => {
-                if (err) {
-                    console.error(err)
-                    return
-                }
+//             fs.rename(sourcePath, targetPath, (err) => {
+//                 if (err) {
+//                     console.error(err)
+//                     return
+//                 }
 
-                console.log(`Moved ${file} to ${targetFolder}`)
-            })
-        })
-    })
-}
+//                 console.log(`Moved ${file} to ${targetFolder}`)
+//             })
+//         })
+//     })
+// }
 
 removeOldMainFile()
-moveMediaFiles()
+// moveMediaFiles()
 
 fs.readdir(buildFolder, (err, files) => {
     if (err) {

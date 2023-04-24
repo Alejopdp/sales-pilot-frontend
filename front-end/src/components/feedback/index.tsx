@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Box, Button, CircularProgress, TextField, Typography } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsDown, faThumbsUp } from '@fortawesome/pro-light-svg-icons'
+import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons'
 import { Send } from '@mui/icons-material'
 
 type FeedbackProps = {
@@ -13,6 +14,8 @@ type FeedbackProps = {
 const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: FeedbackProps) => {
     const [showNegativeFeedbackInput, setShowNegativeFeedbackInput] = useState(false)
     const [negativeFeedback, setNegativeFeedback] = useState('')
+    const [isNegativeFeedbackHovered, setIsNegativeFeedbackHovered] = useState(false)
+    const [isPositiveFeedbackHovered, setIsPositiveFeedbackHovered] = useState(false)
 
     const handleSubmitFeedback = () => {
         handleFeedback(false, negativeFeedback)
@@ -34,21 +37,34 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                             <>
                                 <Box display="flex" flexDirection="column" alignItems="center" marginRight={2}>
                                     <FontAwesomeIcon
-                                        icon={faThumbsDown}
+                                        // icon={faThumbsDown}
+                                        icon={
+                                            showNegativeFeedbackInput || isNegativeFeedbackHovered
+                                                ? faThumbsDownSolid
+                                                : faThumbsDown
+                                        }
                                         size="2x"
-                                        className="fa-icon"
+                                        className={`"fa-icon fa-thumbs-down"${
+                                            showNegativeFeedbackInput ? ' fa-thumbs-down-selected' : ''
+                                        }`}
+                                        onMouseEnter={() => setIsNegativeFeedbackHovered(true)}
+                                        onMouseLeave={() => setIsNegativeFeedbackHovered(false)}
                                         onClick={() => (isFeedbackSubmitting ? '' : setShowNegativeFeedbackInput(true))}
-                                        style={{ cursor: 'pointer', color: '#424242' }}
                                     />
                                 </Box>
 
                                 <Box display="flex" flexDirection="column" alignItems="center" marginLeft={2}>
                                     <FontAwesomeIcon
-                                        icon={faThumbsUp}
+                                        icon={isPositiveFeedbackHovered ? faThumbsUpSolid : faThumbsUp}
                                         size="2x"
-                                        className="fa-icon"
-                                        onClick={() => (isFeedbackSubmitting ? '' : handleFeedback(true, ''))}
-                                        style={{ cursor: 'pointer', color: '#424242' }}
+                                        className="fa-icon fa-thumbs-up"
+                                        onMouseEnter={() => setIsPositiveFeedbackHovered(true)}
+                                        onMouseLeave={() => setIsPositiveFeedbackHovered(false)}
+                                        onClick={() => {
+                                            if (isFeedbackSubmitting) return ''
+                                            setShowNegativeFeedbackInput(false)
+                                            handleFeedback(true, '')
+                                        }}
                                     />
                                 </Box>
                             </>

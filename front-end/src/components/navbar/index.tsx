@@ -1,14 +1,20 @@
 import React from 'react'
-import SalesPilotLogo from '../../assets/sales-pilot-logo.png'
 import { toggleSidebar } from '../../initialize-extension'
 import CloseIcon from '@mui/icons-material/Close'
 import { Box, IconButton } from '@mui/material'
-// const SalesPilotLogo = require('../../assets/sales-pilot-logo.png').default
+import SalesPilotLogo from '../../assets/logoSalesPilot.png'
 
 const Navbar = () => {
     return (
-        <Box display="flex" justifyContent="space-between" width="100%" marginBottom={4} paddingTop={3}>
-            <img width={176} height={46} src={SalesPilotLogo} alt="logo" />
+        <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems={'center'}
+            width="100%"
+            marginBottom={4}
+            paddingTop={3}
+        >
+            <img height={40} src={SalesPilotLogo} alt="logo" />
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <IconButton
                     size="large"
