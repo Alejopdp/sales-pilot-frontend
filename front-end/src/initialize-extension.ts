@@ -80,6 +80,7 @@ export function closeSidebarOnOutsideClick() {
 
 function createProfileButton() {
     const button = document.createElement('button')
+
     button.innerHTML = 'Generar mensaje'
     button.id = SALES_PILOT_PROFILE_BUTTON_ID
     button.addEventListener('click', () => {
@@ -96,6 +97,19 @@ function addSalesPilotButtonToProfile() {
     console.log("Anchor found!")
     const button = createProfileButton()
     button.className = anchor.querySelector("button")?.className ?? ""
+    button.className = `${button.className} sales-pilot-button`
+    const linkedinIcon = anchor.querySelector("li-icon")?.cloneNode(true)
+    if (linkedinIcon) button.insertBefore(linkedinIcon, button.firstChild)
+
+    if (chrome && linkedinIcon) {
+        console.log("Chrome exists");
+        // @ts-ignore
+        const svg = linkedinIcon.querySelector("svg")
+        const icon16Url = chrome.runtime.getURL('icon/16.png')
+
+        svg.setAttribute('src', icon16Url)
+
+    }
     console.log("Profile button created")
     anchor.appendChild(button)
     console.log("Profile button appended to anchor")

@@ -50,6 +50,11 @@ textarea {
     background: rgba(0, 0, 0, 0.08);
 }
 
+.sales-pilot-button {
+    background-color: #2967f6;
+    color: #fff;
+}
+
 .fa-icon {
     cursor: pointer;
     color: #424242;
