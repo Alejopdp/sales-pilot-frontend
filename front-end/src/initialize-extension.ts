@@ -1,5 +1,6 @@
 import { EXTENSION_ID, SALES_PILOT_BUBBLE_CHAT_ID, SALES_PILOT_DOM_CONTAINER_ID, SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR, SALES_PILOT_PROFILE_BUTTON_ID, SALES_PILOT_SCRIPT_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from "./constants"
 import { isALinkedinProfileUrl } from "./helpers"
+import SalesPilotIcon from "./assets/icon/16.png"
 
 export function toggleSidebar() {
     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
@@ -99,17 +100,15 @@ function addSalesPilotButtonToProfile() {
     button.className = anchor.querySelector("button")?.className ?? ""
     button.className = `${button.className} sales-pilot-button`
     const linkedinIcon = anchor.querySelector("li-icon")?.cloneNode(true)
-    if (linkedinIcon) button.insertBefore(linkedinIcon, button.firstChild)
-
-    if (chrome && linkedinIcon) {
-        console.log("Chrome exists");
-        // @ts-ignore
-        const svg = linkedinIcon.querySelector("svg")
-        const icon16Url = chrome.runtime.getURL('icon/16.png')
-
-        svg.setAttribute('src', icon16Url)
-
+    if (linkedinIcon) {
+        button.insertBefore(linkedinIcon, button.firstChild)
+        linkedinIcon?.removeChild(linkedinIcon.firstChild!)
+        const iconcito = document.createElement("img")
+        iconcito.id = "iconcito"
+        iconcito.setAttribute("src", SalesPilotIcon)
+        linkedinIcon?.appendChild(iconcito)
     }
+
     console.log("Profile button created")
     anchor.appendChild(button)
     console.log("Profile button appended to anchor")

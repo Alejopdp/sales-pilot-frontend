@@ -1,6 +1,6 @@
 {
     "name": "Sales Pilot",
-    "version": "1.0.1",
+    "version": "1.0.3",
     "manifest_version": 3,
     "icons": {
         "16": "./public/icon/16.png",
@@ -18,9 +18,9 @@
     "background": {
         "service_worker": "bg-wrapper.js"
     },
-    "host_permissions": ["http://*/*", "https://*/*"],
+    "host_permissions": ["https://*.linkedin.com/*"],
     "content_security_policy": {
-        "extension_pages": "script-src 'self'; connect-src ws://api.salespilot.app ws://api.development.salespilot.app https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com; object-src 'self'"
+        "extension_pages": "script-src 'self'; connect-src ws://api.salespilot.app ws://api.development.salespilot.app https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com/*; object-src 'self'"
     },
     "action": {
         "default_popup": "./public/popup.html"
@@ -35,7 +35,7 @@
                 "/public/*",
                 "/react/js/*"
             ],
-            "matches": ["https://*.linkedin.com/*", "https://*.cloudfunctions.net/*"]
+            "matches": ["https://*.linkedin.com/*"]
         }
     ],
     "externally_connectable": {

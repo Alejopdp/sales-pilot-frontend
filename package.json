@@ -1,6 +1,6 @@
 {
     "name": "react-sales-pilot-chrome-extension",
-    "version": "0.1.0",
+    "version": "1.0.3",
     "private": true,
     "dependencies": {
         "react-scripts": "5.0.1",
@@ -10,7 +10,7 @@
     "scripts": {
         "start": "react-scripts start",
         "build:unpacked": "npx webpack && cd ./front-end && npm run build:unpacked && cd ..",
-        "build:packed": "npx webpack && cd ./front-end && npm run build:packed && cd ../ && cp -Rf ./dist ./react ./sidebar ./bg-wrapper.js ./manifest.json ./packed/ ./public/",
+        "build:packed": "npx webpack && cd ./front-end && npm run build:packed && cd ../ && cp -Rf ./dist ./react ./sidebar ./bg-wrapper.js ./manifest.json ./public/ ./packed/",
         "build": "npm run build:unpacked",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
