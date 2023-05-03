@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsDown, faThumbsUp } from '@fortawesome/pro-light-svg-icons'
 import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons'
 import { Send } from '@mui/icons-material'
+import Textarea from '../textarea'
 
 type FeedbackProps = {
     isFeedbackGranted: boolean
@@ -80,13 +81,13 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                                 <CircularProgress style={{ marginLeft: 'auto', marginRight: 'auto' }} />
                             ) : (
                                 <>
-                                    <TextField
-                                        placeholder="Escribe aquí el feedback"
-                                        multiline
-                                        style={{ marginBottom: 24 }}
-                                        value={negativeFeedback}
-                                        onChange={(e) => setNegativeFeedback(e.target.value)}
-                                    />
+                                    <Box marginBottom={3}>
+                                        <Textarea
+                                            placeholder={'Escribe aquí el feedback'}
+                                            handleMessageChange={setNegativeFeedback}
+                                            value={negativeFeedback}
+                                        />
+                                    </Box>
                                     <Button
                                         variant="outlined"
                                         onClick={() => handleSubmitFeedback()}

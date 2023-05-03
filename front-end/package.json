@@ -58,6 +58,7 @@
     },
     "devDependencies": {
         "@types/chrome": "0.0.233",
+        "@types/puppeteer": "^7.0.4",
         "cross-env": "^7.0.3",
         "css-loader": "^6.7.3",
         "file-loader": "^6.2.0",

@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import { SALES_PILOT_PROFILE_BUTTON_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from './constants'
 import Navbar from './components/navbar'
 import PreSearchSidebarContent from './components/preSearchSidebarContent'
 import { useAuth } from './context/auth.context'
-import { CircularProgress } from '@mui/material'
+import { CircularProgress, TextField, TextareaAutosize } from '@mui/material'
 import SignIn from './components/signIn'
+import Textarea from './components/textarea'
 
 function toggleSidebar() {
     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
@@ -18,6 +19,7 @@ function toggleSidebar() {
 
 function DevelopmentApp() {
     const { handleSignIn, isAuthenticating, isAuthenticated } = useAuth()
+    const [test, setTest] = useState('')
 
     return (
         <>

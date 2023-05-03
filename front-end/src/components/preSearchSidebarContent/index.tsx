@@ -28,15 +28,21 @@ const PreSearchSidebarContent = () => {
         setIsFeedbackGranted(false)
         setProfileIfScrape()
         handleSubmit()
+        // fetchRecentActivity('https://www.linkedin.com/in/tomas-volonte')
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
         if (!isBackgroundConnectionEstablished) return
-        console.log('QUeue: ', queue)
-        if (queue[0] !== undefined) {
-            setQueue(queue.slice(1))
-            triggerMessageSearchAfterSidebarIsOpened()
-        }
+        // console.log('QUeue: ', queue)
+        // if (queue[0] !== undefined) {
+        //     setQueue(queue.slice(1))
+        //     triggerMessageSearchAfterSidebarIsOpened()
+        // }
+
+        const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
+        if (!sidebar) return
+        //@ts-ignore
+        if (sidebar[`${SALES_PILOT_SIDEBAR_ID}-observer`]) return
 
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
@@ -54,10 +60,15 @@ const PreSearchSidebarContent = () => {
             })
         })
 
-        observer.observe(document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)!, { attributes: true })
+        //@ts-ignore
+        sidebar[`${SALES_PILOT_SIDEBAR_ID}-observer`] = observer
+        observer.observe(sidebar!, { attributes: true })
 
         return () => {
+            console.log('Unmounting sidebar')
             observer.disconnect()
+            //@ts-ignore
+            sidebar[`${SALES_PILOT_SIDEBAR_ID}-observer`] = undefined
         }
     }, [triggerMessageSearchAfterSidebarIsOpened, response, queue])
 

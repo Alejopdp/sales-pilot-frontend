@@ -1,13 +1,9 @@
 import React, { useEffect } from 'react'
-import { Box, Button } from '@mui/material'
+import { Box, Button, TextField } from '@mui/material'
 import FileCopyIcon from '@mui/icons-material/FileCopy'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import useApi from '../../hooks/useApi'
-
-function resizeTextarea(event: any) {
-    event.target.style.height = 'auto'
-    event.target.style.height = event.target.scrollHeight + 'px'
-}
+import Textarea from '../textarea'
 
 const GeneratedMessage = ({
     message,
@@ -20,10 +16,6 @@ const GeneratedMessage = ({
 }) => {
     const [wasCopied, setWasCopied] = React.useState(false)
     const { saveCopiedMessage } = useApi()
-
-    useEffect(() => {
-        resizeTextarea({ target: document.querySelector('textarea') })
-    }, [message])
 
     const handleCopyMessage = async (message: string) => {
         if (wasCopied) return
@@ -39,7 +31,8 @@ const GeneratedMessage = ({
     return (
         <Box display={'flex'} flexDirection="column" marginBottom={2} width="100%">
             <Box marginBottom={3} display="flex">
-                <textarea
+                <Textarea handleMessageChange={handleMessageChange} value={message} />
+                {/* <textarea
                     value={message ?? ''}
                     style={{
                         border: 'none',
@@ -53,7 +46,7 @@ const GeneratedMessage = ({
                     }}
                     onInput={(e: React.ChangeEvent<HTMLTextAreaElement>) => resizeTextarea(e)}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleMessageChange(e.target.value)}
-                />
+                /> */}
             </Box>
 
             <Button

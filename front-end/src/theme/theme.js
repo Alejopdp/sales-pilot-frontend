@@ -67,6 +67,21 @@ export const theme = createTheme({
                 },
             },
         },
+        MuiInputBase: {
+            styleOverrides: {
+                notchedOutline: {
+                    borderWidth: 0,
+                },
+                root: {
+                    border: 'none',
+
+                    '&$multiline': {
+                        border: 'none',
+                        padding: 70,
+                    },
+                },
+            },
+        },
         MuiOutlinedInput: {
             styleOverrides: {
                 notchedOutline: {
