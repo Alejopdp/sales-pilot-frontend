@@ -11,6 +11,7 @@ import { SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from '../../
 import ProfileInSidebar from '../profileInSidebar'
 import { useMessageStore } from '../../context/messages.context'
 import { MessageResponse } from '../../types'
+import FetchMessageSpinner from '../fetchMessageSpinner'
 
 const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
@@ -33,11 +34,11 @@ const PreSearchSidebarContent = () => {
 
     useEffect(() => {
         if (!isBackgroundConnectionEstablished) return
-        // console.log('QUeue: ', queue)
-        // if (queue[0] !== undefined) {
-        //     setQueue(queue.slice(1))
-        //     triggerMessageSearchAfterSidebarIsOpened()
-        // }
+        console.log('QUeue: ', queue)
+        if (queue[0] !== undefined) {
+            setQueue(queue.slice(1))
+            triggerMessageSearchAfterSidebarIsOpened()
+        }
 
         const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
         if (!sidebar) return
@@ -132,6 +133,7 @@ const PreSearchSidebarContent = () => {
         if (res.status === 200) setIsFeedbackGranted(true)
         setIsFeedbackSubmitting(false)
     }
+
     return (
         <Box display="flex" flexDirection="column" flex="1" width="100%">
             {selectedProfile && (
@@ -144,12 +146,7 @@ const PreSearchSidebarContent = () => {
             {error ? (
                 <EmptyState title={error} subtitle="" />
             ) : isSubmitting ? (
-                <Box width="100%" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                    <CircularProgress size={16} />
-                    <Typography fontSize={14} marginTop={2}>
-                        Generando un mensaje para {selectedProfile?.name}
-                    </Typography>
-                </Box>
+                <FetchMessageSpinner />
             ) : (
                 <>
                     <GeneratedMessage

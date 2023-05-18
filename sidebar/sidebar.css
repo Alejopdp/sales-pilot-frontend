@@ -16,6 +16,13 @@ textarea {
     z-index: 999999;
 }
 
+@media (max-width: 900px) {
+    .sales-pilot-sidebar {
+        width: 80vw;
+        transform: translateX(-80vw);
+    }
+}
+
 .sales-pilot-sidebar.sales-pilot-sidebar-active {
     transform: translateX(0);
     padding-left: 16px;

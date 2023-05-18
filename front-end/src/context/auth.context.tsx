@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (res.status === 200) {
                 setIsAuthenticating(false)
                 setIsAuthenticated(true)
-                setQueue(['scrape'])
+                // setQueue(['scrape'])
             }
         } catch (error) {
             setIsAuthenticating(false)
