@@ -1,8 +1,13 @@
+## General
+
+-   Production ID => gjobfjilbclolpaeinpedbhbehdcpebj
+-   Staging ID => bdogiafgildacfheaaenopoofinjknkb
+
 ## How to Build
 
 #### For production
 
-1. You should manually change the .env.production "REACT_APP_EXTENSION_ID" variable to => "bdogiafgildacfheaaenopoofinjknkb".
+1. You should manually change the .env.production "REACT_APP_EXTENSION_ID" variable to => "bdogiafgildacfheaaenopoofinjknkb". Also change the "REACT_APP_WS_API_URL" y "REACT_APP_API_URL" variables to the production URLs
 
 2. Then run the command npm run build:packed in the root directory
 
@@ -15,8 +20,6 @@
 2. Run the command npm run build:unpacked in the root directory
 
 ## How to Deploy
-
-#### To Production
 
 1. Once you've made and tested all your release changes, go to /manifest.json and update the "version" field.
 
