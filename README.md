@@ -18,13 +18,19 @@
 
 #### To Production
 
-1. One you have your packed directory after the build, zip that folder
+1. Once you've made and tested all your release changes, go to /manifest.json and update the "version" field.
 
-2. Go to https://chrome.google.com/u/1/webstore/devconsole/85aefddc-bc96-40dc-a072-7aa9f20caee2?hl=en. If you don't have access, request it to alejo@novolabs.xyz
+2. Also update the "version" field in /package.json to match the manifest
 
-3. Click on the button "+ New item" at the top right corner
+3. Build for production
 
-4. Drop the zipped packed folder and complete the form requested on the chrome dev dashboard
+4. Once you have your packed directory after the build, zip that folder
+
+5. Go to https://chrome.google.com/u/1/webstore/devconsole/85aefddc-bc96-40dc-a072-7aa9f20caee2?hl=en. If you don't have access, request it to alejo@novolabs.xyz
+
+6. Click on the button "+ New item" at the top right corner
+
+7. Drop the zipped packed folder and complete the form requested on the chrome dev dashboard
 
 ## How to Debug (Background service)
 
