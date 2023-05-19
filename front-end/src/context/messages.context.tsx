@@ -10,10 +10,9 @@ type MessageContextType = {
 
 export const MessageContextInitialState: MessageContextType = {
     response: {
-        messageId: '',
         name: '',
         position: '',
-        message: '',
+        messages: [],
         avatar: '',
         lastUrl: '',
     },

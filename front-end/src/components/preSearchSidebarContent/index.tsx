@@ -53,7 +53,7 @@ const PreSearchSidebarContent = () => {
                     if (!sidebar) return
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-                        if (response.lastUrl === window.location.href && response.message !== '') return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
+                        if (response.lastUrl === window.location.href && response.messages.length !== 0) return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
 
                         triggerMessageSearchAfterSidebarIsOpened()
                     }
@@ -99,10 +99,11 @@ const PreSearchSidebarContent = () => {
         try {
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) {
+                //@ts-ignore
                 setError(res.data.message)
             }
             const data = res.data as MessageResponse
-            setResponse({ ...data, message: data.message, lastUrl: profileUrl })
+            setResponse({ ...data, messages: data.messages, lastUrl: profileUrl })
         } catch (error) {
             console.log(error)
             setError('No se encontraron mensajes')
@@ -121,19 +122,24 @@ const PreSearchSidebarContent = () => {
         })
     }
 
-    const handleMessageChange = (newMessage: string) => {
-        setResponse({ ...response, message: newMessage })
+    const handleMessageChange = (newMessage: string, messageId: string) => {
+        setResponse({
+            ...response,
+            messages: response.messages.map((message) =>
+                message.id === messageId ? { ...message, content: newMessage } : message
+            ),
+        })
     }
 
     const handleFeedback = async (isPositive: boolean, comment: string) => {
         setIsFeedbackSubmitting(true)
-        const res = await giveFeedback(response.messageId, isPositive, comment)
+        const res = await giveFeedback(response.messages[0].id, isPositive, comment)
 
         if (res.status !== 200) alert('Error')
         if (res.status === 200) setIsFeedbackGranted(true)
         setIsFeedbackSubmitting(false)
     }
-
+    console.log('Messages: ', response.messages)
     return (
         <Box display="flex" flexDirection="column" flex="1" width="100%">
             {selectedProfile && (
@@ -150,8 +156,8 @@ const PreSearchSidebarContent = () => {
             ) : (
                 <>
                     <GeneratedMessage
-                        messageId={response.messageId}
-                        message={response.message}
+                        messageId={response.messages[0]?.id ?? ''}
+                        message={response.messages[0]?.content ?? ''}
                         handleMessageChange={handleMessageChange}
                     />
                     <Box marginTop="auto" marginBottom={5}>

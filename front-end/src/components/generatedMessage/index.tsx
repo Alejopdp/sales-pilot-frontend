@@ -11,7 +11,7 @@ const GeneratedMessage = ({
     messageId,
 }: {
     message: string
-    handleMessageChange: (newMessage: string) => void
+    handleMessageChange: (newMessage: string, messageId: string) => void
     messageId: string
 }) => {
     const [wasCopied, setWasCopied] = React.useState(false)
@@ -31,7 +31,10 @@ const GeneratedMessage = ({
     return (
         <Box display={'flex'} flexDirection="column" marginBottom={2} width="100%">
             <Box marginBottom={3} display="flex">
-                <Textarea handleMessageChange={handleMessageChange} value={message} />
+                <Textarea
+                    handleMessageChange={(newMessage: string) => handleMessageChange(newMessage, messageId)}
+                    value={message}
+                />
                 {/* <textarea
                     value={message ?? ''}
                     style={{

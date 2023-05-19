@@ -1,6 +1,10 @@
+export type Message = {
+    id: string,
+    content: string
+}
+
 export type MessageResponse = {
-    messageId: string
-    message: string
+    messages: Message[]
     avatar: string,
     name: string,
     position: string,
