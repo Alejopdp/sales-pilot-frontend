@@ -17,7 +17,7 @@ const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback } = useApi()
-    const { response, setResponse, queue, setQueue } = useMessageStore()
+    const { response, setResponse, queue, setQueue, messageIndex } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
@@ -133,13 +133,12 @@ const PreSearchSidebarContent = () => {
 
     const handleFeedback = async (isPositive: boolean, comment: string) => {
         setIsFeedbackSubmitting(true)
-        const res = await giveFeedback(response.messages[0].id, isPositive, comment)
+        const res = await giveFeedback(response.messages[messageIndex].id, isPositive, comment)
 
         if (res.status !== 200) alert('Error')
         if (res.status === 200) setIsFeedbackGranted(true)
         setIsFeedbackSubmitting(false)
     }
-    console.log('Messages: ', response.messages)
     return (
         <Box display="flex" flexDirection="column" flex="1" width="100%">
             {selectedProfile && (
@@ -155,11 +154,7 @@ const PreSearchSidebarContent = () => {
                 <FetchMessageSpinner />
             ) : (
                 <>
-                    <GeneratedMessage
-                        messageId={response.messages[0]?.id ?? ''}
-                        message={response.messages[0]?.content ?? ''}
-                        handleMessageChange={handleMessageChange}
-                    />
+                    <GeneratedMessage handleMessageChange={handleMessageChange} />
                     <Box marginTop="auto" marginBottom={5}>
                         <Feedback
                             isFeedbackGranted={isFeedbackGranted}

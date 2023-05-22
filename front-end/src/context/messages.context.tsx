@@ -4,6 +4,8 @@ import { MessageResponse } from '../types'
 type MessageContextType = {
     response: MessageResponse
     setResponse: Dispatch<SetStateAction<MessageResponse>>
+    messageIndex: number
+    setMessageIndex: Dispatch<SetStateAction<number>>
     queue: string[]
     setQueue: Dispatch<SetStateAction<string[]>>
 }
@@ -18,6 +20,8 @@ export const MessageContextInitialState: MessageContextType = {
     },
     setResponse: () => {},
     queue: [],
+    messageIndex: 0,
+    setMessageIndex: () => {},
     setQueue: () => {},
 }
 
@@ -25,6 +29,7 @@ export const MessageContext = React.createContext<MessageContextType>(MessageCon
 
 export const MessageProvider = ({ children }: { children: ReactNode }) => {
     const [response, setResponse] = useState<MessageResponse>(MessageContextInitialState.response)
+    const [messageIndex, setMessageIndex] = useState<number>(0)
     const [queue, setQueue] = useState<string[]>([])
 
     useEffect(() => {
@@ -32,12 +37,14 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     }, [])
 
     return (
-        <MessageContext.Provider value={{ response, setResponse, queue, setQueue }}>{children}</MessageContext.Provider>
+        <MessageContext.Provider value={{ response, setResponse, queue, setQueue, messageIndex, setMessageIndex }}>
+            {children}
+        </MessageContext.Provider>
     )
 }
 
 export const useMessageStore = (): MessageContextType => {
-    const { response, setResponse, queue, setQueue } = useContext(MessageContext)
+    const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex } = useContext(MessageContext)
 
-    return { response, setResponse, queue, setQueue }
+    return { messageIndex, response, setResponse, queue, setQueue, setMessageIndex }
 }
