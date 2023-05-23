@@ -1,7 +1,7 @@
 const API_URL = 'https://api.development.salespilot.app/api'
 
-export const getMessagsWithLinkedinUrl = async (leadUrl, access_token) => {
-    const res = await fetch(`${API_URL}/linkedin`, {
+export const getMessagsWithLinkedinUrl = async (leadUrl, access_token, mockMessages) => {
+    const res = await fetch(`${API_URL}/linkedin?mockMessages=${mockMessages}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

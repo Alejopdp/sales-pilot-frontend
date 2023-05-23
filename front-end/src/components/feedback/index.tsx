@@ -21,6 +21,7 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
     const handleSubmitFeedback = () => {
         handleFeedback(false, negativeFeedback)
         setNegativeFeedback('')
+        setShowNegativeFeedbackInput(false)
     }
 
     return (

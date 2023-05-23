@@ -1,6 +1,7 @@
 export type Message = {
     id: string,
     content: string
+    hasFeedback: boolean
 }
 
 export type MessageResponse = {

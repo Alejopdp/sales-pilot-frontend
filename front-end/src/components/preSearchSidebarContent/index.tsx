@@ -133,10 +133,18 @@ const PreSearchSidebarContent = () => {
 
     const handleFeedback = async (isPositive: boolean, comment: string) => {
         setIsFeedbackSubmitting(true)
-        const res = await giveFeedback(response.messages[messageIndex].id, isPositive, comment)
+        const messageId = response.messages[messageIndex].id
+        const res = await giveFeedback(messageId, isPositive, comment)
 
         if (res.status !== 200) alert('Error')
-        if (res.status === 200) setIsFeedbackGranted(true)
+        if (res.status === 200) {
+            setResponse({
+                ...response,
+                messages: response.messages.map((message) =>
+                    message.id === messageId ? { ...message, hasFeedback: true } : message
+                ),
+            })
+        }
         setIsFeedbackSubmitting(false)
     }
     return (
@@ -157,7 +165,7 @@ const PreSearchSidebarContent = () => {
                     <GeneratedMessage handleMessageChange={handleMessageChange} />
                     <Box marginTop="auto" marginBottom={5}>
                         <Feedback
-                            isFeedbackGranted={isFeedbackGranted}
+                            isFeedbackGranted={response.messages[messageIndex]?.hasFeedback}
                             handleFeedback={handleFeedback}
                             isFeedbackSubmitting={isFeedbackSubmitting}
                         />

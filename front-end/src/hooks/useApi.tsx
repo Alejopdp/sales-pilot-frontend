@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 import { useBackgroundConnection } from '../context/backgroundConnection'
 import { MessageResponse } from '../types'
-import { LOCAL_STORAGE_ACCESS_TOKEN } from '../constants'
+import { DEVELOPMENT_EXTENSION_ID, LOCAL_STORAGE_ACCESS_TOKEN } from '../constants'
 
 const useApi = () => {
     const { connection } = useBackgroundConnection()
@@ -23,6 +23,7 @@ const useApi = () => {
             data: {
                 leadUrl,
                 access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
+                mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
             },
         })
 

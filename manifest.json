@@ -1,6 +1,6 @@
 {
-    "name": "Sales Pilot",
-    "version": "1.0.5",
+    "name": "[pre-production] Sales Pilot",
+    "version": "1.0.6",
     "manifest_version": 3,
     "icons": {
         "16": "./public/icon/16.png",

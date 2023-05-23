@@ -23,7 +23,11 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
 
         switch (message.action) {
             case FETCH_PROFILE_MESSAGES:
-                const res = await getMessagsWithLinkedinUrl(message.data.leadUrl, message.data.access_token)
+                const res = await getMessagsWithLinkedinUrl(
+                    message.data.leadUrl,
+                    message.data.access_token,
+                    message.data.mockMessages
+                )
                 console.log('Message res: ', res)
                 if (res.status !== 201)
                     port.postMessage({
