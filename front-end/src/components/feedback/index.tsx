@@ -5,6 +5,9 @@ import { faThumbsDown, faThumbsUp } from '@fortawesome/pro-light-svg-icons'
 import { faThumbsDown as faThumbsDownSolid, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons'
 import { Send } from '@mui/icons-material'
 import Textarea from '../textarea'
+import useApi from '../../hooks/useApi'
+import { useAuth } from '../../context/auth.context'
+import { useMessageStore } from '../../context/messages.context'
 
 type FeedbackProps = {
     isFeedbackGranted: boolean
@@ -13,15 +16,25 @@ type FeedbackProps = {
 }
 
 const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: FeedbackProps) => {
+    const { getUserDataFromLocalStorage } = useAuth()
+    const { trackAnalyticEvent } = useApi()
+    const { response, messageIndex } = useMessageStore()
     const [showNegativeFeedbackInput, setShowNegativeFeedbackInput] = useState(false)
     const [negativeFeedback, setNegativeFeedback] = useState('')
     const [isNegativeFeedbackHovered, setIsNegativeFeedbackHovered] = useState(false)
     const [isPositiveFeedbackHovered, setIsPositiveFeedbackHovered] = useState(false)
 
     const handleSubmitFeedback = () => {
+        trackAnalyticEvent('send-feedback', {
+            ...getUserDataFromLocalStorage(),
+            messageId: response.messages[messageIndex]?.id ?? '',
+            feedback: negativeFeedback,
+        })
         handleFeedback(false, negativeFeedback)
         setNegativeFeedback('')
         setShowNegativeFeedbackInput(false)
+        setIsNegativeFeedbackHovered(false)
+        setIsPositiveFeedbackHovered(false)
     }
 
     return (
@@ -50,7 +63,17 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                                         }`}
                                         onMouseEnter={() => setIsNegativeFeedbackHovered(true)}
                                         onMouseLeave={() => setIsNegativeFeedbackHovered(false)}
-                                        onClick={() => (isFeedbackSubmitting ? '' : setShowNegativeFeedbackInput(true))}
+                                        onClick={
+                                            isFeedbackSubmitting
+                                                ? () => ''
+                                                : () => {
+                                                      setShowNegativeFeedbackInput(true)
+                                                      trackAnalyticEvent('dislike-message', {
+                                                          ...getUserDataFromLocalStorage(),
+                                                          messageId: response.messages[messageIndex]?.id ?? '',
+                                                      })
+                                                  }
+                                        }
                                     />
                                 </Box>
 
@@ -63,6 +86,10 @@ const Feedback = ({ handleFeedback, isFeedbackGranted, isFeedbackSubmitting }: F
                                         onMouseLeave={() => setIsPositiveFeedbackHovered(false)}
                                         onClick={() => {
                                             if (isFeedbackSubmitting) return ''
+                                            trackAnalyticEvent('like-message', {
+                                                ...getUserDataFromLocalStorage(),
+                                                messageId: response.messages[messageIndex]?.id ?? '',
+                                            })
                                             setShowNegativeFeedbackInput(false)
                                             handleFeedback(true, '')
                                         }}

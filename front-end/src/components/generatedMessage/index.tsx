@@ -7,12 +7,15 @@ import Textarea from '../textarea'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleChevronLeft, faCircleChevronRight } from '@fortawesome/pro-light-svg-icons'
 import { useMessageStore } from '../../context/messages.context'
+import { useAuth } from '../../context/auth.context'
 
 const GeneratedMessage = ({
     handleMessageChange,
 }: {
     handleMessageChange: (newMessage: string, messageId: string) => void
 }) => {
+    const { getUserDataFromLocalStorage } = useAuth()
+    const { trackAnalyticEvent } = useApi()
     const { response, messageIndex, setMessageIndex } = useMessageStore()
     const [wasCopied, setWasCopied] = React.useState(false)
     const { saveCopiedMessage } = useApi()
@@ -47,7 +50,10 @@ const GeneratedMessage = ({
                         {messageIndex !== 0 && (
                             <FontAwesomeIcon
                                 icon={faCircleChevronLeft}
-                                onClick={() => handleMessageCarousel('left')}
+                                onClick={() => {
+                                    trackAnalyticEvent('see-previous-message', { ...getUserDataFromLocalStorage() })
+                                    handleMessageCarousel('left')
+                                }}
                                 size="2x"
                                 style={{ cursor: 'pointer', color: '#2967F6' }}
                             />
@@ -55,7 +61,10 @@ const GeneratedMessage = ({
                         {messageIndex !== response.messages.length - 1 && (
                             <FontAwesomeIcon
                                 icon={faCircleChevronRight}
-                                onClick={() => handleMessageCarousel('right')}
+                                onClick={() => {
+                                    trackAnalyticEvent('see-next-message', { ...getUserDataFromLocalStorage() })
+                                    handleMessageCarousel('right')
+                                }}
                                 size="2x"
                                 style={{ cursor: 'pointer', color: '#2967F6', marginLeft: 8 }}
                             />
@@ -74,7 +83,13 @@ const GeneratedMessage = ({
 
             <Button
                 variant="contained"
-                onClick={() => handleCopyMessage(response.messages[messageIndex]?.content ?? '')}
+                onClick={() => {
+                    trackAnalyticEvent('copy-message', {
+                        ...getUserDataFromLocalStorage(),
+                        messageId: response.messages[messageIndex]?.id ?? '',
+                    })
+                    handleCopyMessage(response.messages[messageIndex]?.content ?? '')
+                }}
                 style={{
                     height: 42,
                     fontSize: 14,

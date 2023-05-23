@@ -12,11 +12,13 @@ import ProfileInSidebar from '../profileInSidebar'
 import { useMessageStore } from '../../context/messages.context'
 import { MessageResponse } from '../../types'
 import FetchMessageSpinner from '../fetchMessageSpinner'
+import { useAuth } from '../../context/auth.context'
 
 const PreSearchSidebarContent = () => {
     const [error, setError] = useState('')
+    const { getUserDataFromLocalStorage } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback } = useApi()
+    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
     const { response, setResponse, queue, setQueue, messageIndex } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
@@ -53,6 +55,8 @@ const PreSearchSidebarContent = () => {
                     if (!sidebar) return
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
+                        console.log('SIDEBAR OPENED AFTER CLICK!')
+                        trackAnalyticEvent('open-tab-extension', { ...getUserDataFromLocalStorage() })
                         if (response.lastUrl === window.location.href && response.messages.length !== 0) return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
 
                         triggerMessageSearchAfterSidebarIsOpened()

@@ -1,20 +1,29 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
-import { LOCAL_STORAGE_ACCESS_TOKEN, VALIDATE_SESSION, WS_EVENT_SIGN_IN_SUCCESSFUL } from '../constants'
+import {
+    LOCAL_STORAGE_ACCESS_TOKEN,
+    LOCAL_STORAGE_USER_EMAIL_ADDRESS,
+    LOCAL_STORAGE_USER_ID,
+    VALIDATE_SESSION,
+    WS_EVENT_SIGN_IN_SUCCESSFUL,
+} from '../constants'
 import axios from 'axios'
 import { useBackgroundConnection } from './backgroundConnection'
 import { useMessageStore } from './messages.context'
+import useApi from '../hooks/useApi'
 
 type AuthContextType = {
     handleSignIn: () => void
     isAuthenticating: boolean
     isAuthenticated: boolean
+    getUserDataFromLocalStorage: () => { user_id: string | null; user_email_address: string | null }
 }
 
 export const AuthContextInitialState: AuthContextType = {
     handleSignIn: () => {},
     isAuthenticating: false,
     isAuthenticated: false,
+    getUserDataFromLocalStorage: () => ({ user_id: '', user_email_address: '' }),
 }
 
 export const AuthContext = React.createContext<AuthContextType>(AuthContextInitialState)
@@ -22,6 +31,7 @@ export const AuthContext = React.createContext<AuthContextType>(AuthContextIniti
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { connection, port } = useBackgroundConnection()
     const { setQueue } = useMessageStore()
+    const { trackAnalyticEvent } = useApi()
     const [isAuthenticating, setIsAuthenticating] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -35,6 +45,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setIsAuthenticating(false)
         }
     }, [connection])
+
+    const getUserDataFromLocalStorage = () => {
+        const user_id = window.localStorage.getItem(LOCAL_STORAGE_USER_ID)
+        const user_email_address = window.localStorage.getItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS)
+        return { user_id, user_email_address }
+    }
 
     const validateAccessToken = async (access_token: string) => {
         try {
@@ -68,6 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const handleSignIn = () => {
         if (process.env.NODE_ENV === 'production') {
             handleProductionSignIn()
+            trackAnalyticEvent('login-linkedin-sidebar', { authMethod: 'Linkedin' })
         } else {
             handleDevelopmentSignIn()
         }
@@ -82,7 +99,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // TODO: REmove listener after sign in
             if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
                 if (message.data.status === 200) {
-                    window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token) //TODO: Magic String
+                    window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token)
+                    window.localStorage.setItem(LOCAL_STORAGE_USER_ID, message.data.user_id)
+                    window.localStorage.setItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS, message.data.user_email_address)
                     setIsAuthenticating(false)
                     setIsAuthenticated(true)
                     setQueue(['scrape'])
@@ -90,7 +109,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             }
         })
         const res = await connection.send({ action: 'SIGN_IN' })
-        console.log('RESPONSE: ', res)
 
         window
             .open(
@@ -125,14 +143,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ handleSignIn, isAuthenticating, isAuthenticated }}>
+        <AuthContext.Provider value={{ handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }}>
             {children}
         </AuthContext.Provider>
     )
 }
 
 export const useAuth = (): AuthContextType => {
-    const { handleSignIn, isAuthenticating, isAuthenticated } = useContext(AuthContext)
+    const { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage } = useContext(AuthContext)
 
-    return { handleSignIn, isAuthenticating, isAuthenticated }
+    return { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }
 }

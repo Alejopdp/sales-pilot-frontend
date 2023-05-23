@@ -9,9 +9,18 @@ import {
     WS_EVENT_SIGN_IN_SUCCESSFUL,
 } from './api_actions'
 import { getMessagsWithLinkedinUrl, giveFeedback, saveCopiedMessage, validateSession } from './requests'
+import { init, track } from '@amplitude/analytics-browser'
 
+init('84794981b424b69ef82526112d599fcd')
+
+if (chrome.action) {
+    chrome.action.onClicked.addListener(function (tab) {
+        track('open-tab-extension', {})
+    })
+}
 chrome.runtime.onConnectExternal.addListener((newPort) => {
     console.log('On connect listener')
+
     // Save the port globally
     const port = newPort
 
@@ -91,6 +100,8 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                             data: {
                                 status: 200,
                                 access_token: event.access_token,
+                                user_id: event.user_id,
+                                user_email_address: event.user_email_address,
                             },
                         })
                     })
@@ -143,6 +154,9 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     })
                 }
 
+                break
+            case 'TRACK_ANALYTIC_EVENT':
+                track(message.data.eventName, message.data.eventProperties)
                 break
         }
     })

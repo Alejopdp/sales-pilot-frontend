@@ -59,7 +59,24 @@ const useApi = () => {
         return res
     }
 
-    return { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, saveCopiedMessage }
+    const trackAnalyticEvent = async (eventName: string, eventProperties: any) => {
+        if (!connection || connection?.send === null) throw new Error('Connection to background not yet establsihed')
+        connection.send({
+            action: 'TRACK_ANALYTIC_EVENT',
+            data: {
+                eventName,
+                eventProperties,
+            },
+        })
+    }
+
+    return {
+        getMessagsWithLinkedinUrl,
+        isBackgroundConnectionEstablished,
+        giveFeedback,
+        saveCopiedMessage,
+        trackAnalyticEvent,
+    }
 }
 
 export default useApi
