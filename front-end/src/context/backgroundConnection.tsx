@@ -51,7 +51,9 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
                 console.log('Connecting to background...')
                 //@ts-ignore
                 const port = chrome.runtime.connect(EXTENSION_ID, { name: 'background' })
-
+                port.onMessage.addListener((message: any) => {
+                    if (message.action === 'keep-alive') port.postMessage({ action: 'keep-alive-response' })
+                })
                 setConnection({
                     send: (message: IMessage, callback?: () => void) =>
                         new Promise<IBackgroundResponse>((resolve) => {

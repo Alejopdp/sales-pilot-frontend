@@ -1,6 +1,6 @@
 {
     "name": "[pre-production] Sales Pilot",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "manifest_version": 3,
     "icons": {
         "16": "./public/icon/16.png",
@@ -18,7 +18,6 @@
     "background": {
         "service_worker": "bg-wrapper.js"
     },
-    "permissions": ["storage", "tabs"],
     "host_permissions": ["https://*.linkedin.com/*"],
     "content_security_policy": {
         "extension_pages": "script-src 'self'; connect-src ws://api.salespilot.app ws://api.development.salespilot.app https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com/* https://api2.amplitude.com/2/httpapi; object-src 'self'"
