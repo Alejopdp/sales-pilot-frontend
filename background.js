@@ -24,7 +24,9 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
     // Save the port globally
     const port = newPort
 
-    port.postMessage({ action: 'keep-alive' })
+    setInterval(() => {
+        port.postMessage({ action: 'keep-alive' })
+    }, 1000 * 60)
 
     // Add a listener for incoming messages on the port
     port.onMessage.addListener(async (message) => {
