@@ -29,7 +29,7 @@ export const AuthContextInitialState: AuthContextType = {
 export const AuthContext = React.createContext<AuthContextType>(AuthContextInitialState)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const { connection, port } = useBackgroundConnection()
+    const { connection } = useBackgroundConnection()
     const { setQueue } = useMessageStore()
     const { trackAnalyticEvent } = useApi()
     const [isAuthenticating, setIsAuthenticating] = useState(true)
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const redirect_uri = `${process.env.REACT_APP_API_URL}/auth/sign-in`
 
         if (connection === null || connection.send === null) return
-        port.onMessage.addListener((message: any, port: any) => {
+        connection.port.onMessage.addListener((message: any, port: any) => {
             // TODO: REmove listener after sign in
             if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
                 if (message.data.status === 200) {

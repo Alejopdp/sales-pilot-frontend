@@ -9,15 +9,22 @@ const useApi = () => {
     const [isBackgroundConnectionEstablished, setIsBackgroundConnectionEstablished] = useState(false)
 
     useEffect(() => {
-        if (!connection || connection?.send === null) return
+        if (!connection || connection?.send === null) {
+            setIsBackgroundConnectionEstablished(false)
+            console.log("Background connecetion hasn't been established yet")
+            return
+        }
         setIsBackgroundConnectionEstablished(true)
-    }, [connection])
+        console.log('Background connecetion has been established')
+    }, [connection, connection?.port])
+
+    console.log('Port in useAPi: ', connection?.port?.name)
 
     const getMessagsWithLinkedinUrl = async (
         leadUrl: string
     ): Promise<Pick<AxiosResponse<MessageResponse | { message: string }>, 'data' | 'status'>> => {
         if (!connection || connection?.send === null) throw new Error('Connection to background not yet establsihed')
-
+        console.log('Sending message to port : ', connection?.port?.name)
         const res = await connection.send({
             action: 'FETCH_PROFILE_MESSAGES',
             data: {

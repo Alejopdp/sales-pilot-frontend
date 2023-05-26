@@ -165,7 +165,17 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
         }
     })
 
-    port.onDisconnect.addListener(() => {
-        console.log('Disconencted')
-    })
+    // port.onDisconnect.addListener(deleteTimer)
+    // port._timer = setTimeout(forceReconnect, 250e3, port)
 })
+
+function forceReconnect(port) {
+    deleteTimer(port)
+    port.disconnect()
+}
+function deleteTimer(port) {
+    if (port._timer) {
+        clearTimeout(port._timer)
+        delete port._timer
+    }
+}

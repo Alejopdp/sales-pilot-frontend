@@ -13,24 +13,23 @@ interface IBackgroundResponse {
 }
 
 interface IBackgroundConnection {
+    port: any | null
     send: ((message: IMessage) => Promise<IBackgroundResponse>) | null
     close: (() => void) | null
 }
 
 interface IBackgroundContext {
     connection: IBackgroundConnection | null
-    port: any | null
 }
 
 const BackgroundContext = createContext<IBackgroundContext>({
     connection: null,
-    port: null,
 })
 
-export const useBackgroundConnection = (): { connection: IBackgroundConnection | null; port: any | null } => {
-    const { connection, port } = useContext(BackgroundContext)
+export const useBackgroundConnection = (): { connection: IBackgroundConnection | null } => {
+    const { connection } = useContext(BackgroundContext)
 
-    return { connection, port }
+    return { connection }
 }
 
 interface IBackgroundProviderProps {
@@ -38,36 +37,46 @@ interface IBackgroundProviderProps {
 }
 
 const connectionIniitialState: IBackgroundConnection = {
+    port: null,
     send: null,
     close: null,
 }
 export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.Element => {
     const [connection, setConnection] = useState<IBackgroundConnection>(connectionIniitialState)
-    const [port, setPort] = useState<any | null>(null)
+
+    const connectToBackground = () => {
+        const port = chrome.runtime.connect(EXTENSION_ID, { name: `background-${Math.random()}` })
+        port.onMessage.addListener((message: any) => {
+            if (message.action === 'keep-alive') port.postMessage({ action: 'keep-alive-response' })
+        })
+
+        port.onDisconnect.addListener(() => {
+            console.log('Disconnected from background...')
+            setConnection({ ...connectionIniitialState })
+            setTimeout(() => connectToBackground(), 1000)
+        })
+        setConnection({
+            send: (message: IMessage, callback?: () => void) =>
+                new Promise<IBackgroundResponse>((resolve) => {
+                    port.postMessage(message)
+
+                    port.onMessage.addListener((response: any) => {
+                        if (response.action === message.action) {
+                            resolve(response.data)
+                        }
+                    })
+                }),
+            close: () => port.disconnect(),
+            port,
+        })
+    }
 
     useEffect(() => {
         if (process.env.NODE_ENV !== 'development') {
             try {
                 console.log('Connecting to background...')
+                connectToBackground()
                 //@ts-ignore
-                const port = chrome.runtime.connect(EXTENSION_ID, { name: 'background' })
-                port.onMessage.addListener((message: any) => {
-                    if (message.action === 'keep-alive') port.postMessage({ action: 'keep-alive-response' })
-                })
-                setConnection({
-                    send: (message: IMessage, callback?: () => void) =>
-                        new Promise<IBackgroundResponse>((resolve) => {
-                            port.postMessage(message)
-
-                            port.onMessage.addListener((response: any) => {
-                                if (response.action === message.action) {
-                                    resolve(response.data)
-                                }
-                            })
-                        }),
-                    close: () => port.disconnect(),
-                })
-                setPort(port)
             } catch (error) {
                 console.error('Error connecting to background', error)
             }
@@ -76,11 +85,11 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
         return () => {
             if (process.env.NODE_ENV !== 'development') {
                 console.log('Disconnecting from background...')
-                port.disconnect()
+                connection.port.disconnect()
                 setConnection(connectionIniitialState)
             }
         }
     }, [])
 
-    return <BackgroundContext.Provider value={{ connection, port }}>{children}</BackgroundContext.Provider>
+    return <BackgroundContext.Provider value={{ connection }}>{children}</BackgroundContext.Provider>
 }
