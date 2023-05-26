@@ -10,6 +10,7 @@ import {
 } from './api_actions'
 import { getMessagsWithLinkedinUrl, giveFeedback, saveCopiedMessage, validateSession } from './requests'
 import { init, track } from '@amplitude/analytics-browser'
+const WS_API_URL = 'ws://api.development.salespilot.app'
 
 init('84794981b424b69ef82526112d599fcd')
 
@@ -82,7 +83,7 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
 
             case SIGN_IN:
                 console.log('Connecting to socket')
-                const socket = io(`ws://api.development.salespilot.app`, { transports: ['websocket'] }) // TODO: Change w env var
+                const socket = io(WS_API_URL, { transports: ['websocket'] }) // TODO: Change w env var
 
                 socket.on('connect', () => {
                     console.log('Connected to server, socket id: ', socket.id)
