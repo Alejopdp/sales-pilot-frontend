@@ -35,6 +35,10 @@
 
 7. Drop the zipped packed folder and complete the form requested on the chrome dev dashboard
 
+8. Execute the following commands to tag the new version in Github
+   `git tag vx.x.x`
+   `git push origin vx.x.x`
+
 ## How to Debug (Background service)
 
 ## How to inject script
