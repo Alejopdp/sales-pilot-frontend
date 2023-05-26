@@ -1,4 +1,4 @@
-const API_URL = 'https://api.development.salespilot.app/api'
+const API_URL = 'https://api.salespilot.app/api'
 
 export const getMessagsWithLinkedinUrl = async (leadUrl, access_token, mockMessages) => {
     const res = await fetch(`${API_URL}/linkedin?mockMessages=${mockMessages}`, {
