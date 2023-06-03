@@ -19,18 +19,22 @@ const PreSearchSidebarContent = () => {
     const { getUserDataFromLocalStorage } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
-    const { response, setResponse, queue, setQueue, messageIndex } = useMessageStore()
+    const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
     const { getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
-    const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
-        if (!isBackgroundConnectionEstablished) return
-        // TODO: Make a function of reinit
+    const reinitFetch = () => {
+        setMessageIndex(0)
         setIsFeedbackGranted(false)
         setProfileIfScrape()
         handleSubmit()
+    }
+
+    const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
+        if (!isBackgroundConnectionEstablished) return
+        reinitFetch()
         // fetchRecentActivity('https://www.linkedin.com/in/tomas-volonte')
     }, [isBackgroundConnectionEstablished])
 
@@ -55,7 +59,6 @@ const PreSearchSidebarContent = () => {
                     if (!sidebar) return
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-                        console.log('SIDEBAR OPENED AFTER CLICK!')
                         trackAnalyticEvent('open-tab-extension', { ...getUserDataFromLocalStorage() })
                         if (response.lastUrl === window.location.href && response.messages.length !== 0) return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
 
