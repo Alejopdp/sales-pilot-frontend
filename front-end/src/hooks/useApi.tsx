@@ -18,8 +18,6 @@ const useApi = () => {
         console.log('Background connecetion has been established')
     }, [connection, connection?.port])
 
-    console.log('Port in useAPi: ', connection?.port?.name)
-
     const getMessagsWithLinkedinUrl = async (
         leadUrl: string
     ): Promise<Pick<AxiosResponse<MessageResponse | { message: string }>, 'data' | 'status'>> => {
@@ -30,7 +28,8 @@ const useApi = () => {
             data: {
                 leadUrl,
                 access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
-                mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
+                mockMessages: false,
+                // mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
             },
         })
 

@@ -18,8 +18,18 @@ const EmptyState = ({ title, subtitle, handler }: EmptyStateProps) => {
                 {subtitle}
             </Typography>
             {handler && (
-                <Button variant="contained" fullWidth onClick={(e) => handler(e)}>
-                    VOLVER A INTENTAR
+                <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={(e) => handler(e)}
+                    style={{
+                        height: 42,
+                        fontSize: 14,
+                        borderRadius: 60,
+                    }} //TODO: Make a component for styles or add it to the theme
+                >
+                    {' '}
+                    REINTENTAR
                 </Button>
             )}
         </Box>
