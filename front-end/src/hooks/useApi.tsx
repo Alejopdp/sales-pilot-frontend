@@ -18,8 +18,6 @@ const useApi = () => {
         console.log('Background connecetion has been established')
     }, [connection, connection?.port])
 
-    console.log('Port in useAPi: ', connection?.port?.name)
-
     const getMessagsWithLinkedinUrl = async (
         leadUrl: string
     ): Promise<Pick<AxiosResponse<MessageResponse | { message: string }>, 'data' | 'status'>> => {

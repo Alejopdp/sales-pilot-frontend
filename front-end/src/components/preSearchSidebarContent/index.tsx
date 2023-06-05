@@ -15,28 +15,32 @@ import FetchMessageSpinner from '../fetchMessageSpinner'
 import { useAuth } from '../../context/auth.context'
 
 const PreSearchSidebarContent = () => {
-    const [error, setError] = useState('')
+    const [error, setError] = useState<{ statusCode: number; message: string } | undefined>(undefined)
     const { getUserDataFromLocalStorage } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
-    const { response, setResponse, queue, setQueue, messageIndex } = useMessageStore()
+    const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
     const { getName, getPositon, getProfileImageSrc } = useLinkedinScraper()
 
-    const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
-        if (!isBackgroundConnectionEstablished) return
-        // TODO: Make a function of reinit
+    const reinitFetch = () => {
+        setError(undefined)
+        setMessageIndex(0)
         setIsFeedbackGranted(false)
         setProfileIfScrape()
         handleSubmit()
+    }
+
+    const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
+        if (!isBackgroundConnectionEstablished) return
+        reinitFetch()
         // fetchRecentActivity('https://www.linkedin.com/in/tomas-volonte')
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
         if (!isBackgroundConnectionEstablished) return
-        console.log('QUeue: ', queue)
         if (queue[0] !== undefined) {
             setQueue(queue.slice(1))
             triggerMessageSearchAfterSidebarIsOpened()
@@ -55,7 +59,6 @@ const PreSearchSidebarContent = () => {
                     if (!sidebar) return
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
-                        console.log('SIDEBAR OPENED AFTER CLICK!')
                         trackAnalyticEvent('open-tab-extension', { ...getUserDataFromLocalStorage() })
                         if (response.lastUrl === window.location.href && response.messages.length !== 0) return //TODO: El usuario puede abrir la sidebar desde otra URL, por lo que habría que cambiar esta validación
 
@@ -78,11 +81,12 @@ const PreSearchSidebarContent = () => {
     }, [triggerMessageSearchAfterSidebarIsOpened, response, queue])
 
     const handleSubmit = async () => {
+        setError(undefined)
         setIsSubmitting(true)
         const url = window.location.href
 
         if (!isLinkedInURL(url)) {
-            setError('La URL ingresada no es de Linkedin')
+            setError({ statusCode: -1, message: 'La URL ingresada no es de Linkedin' })
             setIsSubmitting(false)
 
             return
@@ -90,7 +94,10 @@ const PreSearchSidebarContent = () => {
 
         if (!isALinkedinProfile(url)) {
             const splittedUrl = url.split('/')
-            setError(`No se ha encontrado el perfil ${splittedUrl[splittedUrl.length - 1]}`)
+            setError({
+                statusCode: -1,
+                message: `No se ha encontrado el perfil ${splittedUrl[splittedUrl.length - 1]}`,
+            })
             setIsSubmitting(false)
 
             return
@@ -104,13 +111,13 @@ const PreSearchSidebarContent = () => {
             const res = await getMessagsWithLinkedinUrl(profileUrl)
             if (res.status !== 201) {
                 //@ts-ignore
-                setError(res.data.message)
+                setError(res.data)
             }
             const data = res.data as MessageResponse
             setResponse({ ...data, messages: data.messages, lastUrl: profileUrl })
         } catch (error) {
             console.log(error)
-            setError('No se encontraron mensajes')
+            setError({ statusCode: 500, message: 'Ocurrió un error inesperado' })
         }
 
         setIsSubmitting(false)
@@ -161,7 +168,7 @@ const PreSearchSidebarContent = () => {
                 />
             )}
             {error ? (
-                <EmptyState title={error} subtitle="" />
+                <EmptyState title={error.message} subtitle="" handler={handleSubmit} />
             ) : isSubmitting ? (
                 <FetchMessageSpinner />
             ) : (
