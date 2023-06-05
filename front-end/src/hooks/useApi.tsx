@@ -28,8 +28,7 @@ const useApi = () => {
             data: {
                 leadUrl,
                 access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
-                mockMessages: false,
-                // mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
+                mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
             },
         })
 
