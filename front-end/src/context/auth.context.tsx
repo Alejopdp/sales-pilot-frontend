@@ -63,10 +63,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setIsAuthenticating(false)
                 setIsAuthenticated(true)
                 // setQueue(['scrape'])
+            } else {
+                setIsAuthenticating(false)
+                setIsAuthenticated(false)
+                window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
+                window.localStorage.removeItem(LOCAL_STORAGE_USER_ID)
             }
         } catch (error) {
             setIsAuthenticating(false)
             setIsAuthenticated(false)
+            window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
+            window.localStorage.removeItem(LOCAL_STORAGE_USER_ID)
         }
     }
 
