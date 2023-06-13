@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { Box, CircularProgress, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { isALinkedinProfile, isLinkedInURL } from '../../helpers'
 import useApi from '../../hooks/useApi'
 import EmptyState from '../emptyState/emptyState'

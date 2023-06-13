@@ -1,5 +1,4 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react'
-import { io } from 'socket.io-client'
 import {
     LOCAL_STORAGE_ACCESS_TOKEN,
     LOCAL_STORAGE_USER_EMAIL_ADDRESS,
@@ -105,7 +104,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             return
         }
         connection.port.onMessage.addListener((message: any, port: any) => {
-            // TODO: REmove listener after sign in
             if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
                 if (message.data.status === 200) {
                     window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token)

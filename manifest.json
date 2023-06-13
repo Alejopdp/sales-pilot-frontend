@@ -1,6 +1,6 @@
 {
     "name": "[pre-production] Sales Pilot",
-    "version": "1.1.2",
+    "version": "1.1.3",
     "manifest_version": 3,
     "icons": {
         "16": "./public/icon/16.png",
@@ -42,7 +42,8 @@
         "ids": [
             "enkbjolcglilknggjlngokegcfgpebnl",
             "peogaapbhegpkmhkjdbdggalfjlipfnp",
-            "bdogiafgildacfheaaenopoofinjknkb"
+            "bdogiafgildacfheaaenopoofinjknkb",
+            "gjobfjilbclolpaeinpedbhbehdcpebj"
         ],
         "matches": ["https://*.linkedin.com/*"]
     }
