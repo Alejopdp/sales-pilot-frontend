@@ -5,19 +5,20 @@ import EmptyBox from '../../assets/empty-box.png'
 type EmptyStateProps = {
     title: string
     subtitle: string
+    showHandler?: boolean
     handler?: (e: any) => void
 }
-const EmptyState = ({ title, subtitle, handler }: EmptyStateProps) => {
+const EmptyState = ({ title, subtitle, showHandler, handler }: EmptyStateProps) => {
     return (
         <Box display="flex" flexDirection={'column'} justifyContent={'center'} alignItems="center">
             <img src={EmptyBox} alt="empty-box" width={256} style={{ marginBottom: 16 }} />
             <Typography variant="h2" marginBottom={2} textAlign="center">
                 {title}
             </Typography>
-            <Typography variant="body1" marginBottom={4} textAlign="center">
-                {subtitle}
+            <Typography variant="subtitle1" marginBottom={4} textAlign="center">
+                <span dangerouslySetInnerHTML={{ __html: subtitle }} />
             </Typography>
-            {handler && (
+            {showHandler && handler && (
                 <Button
                     variant="outlined"
                     fullWidth
@@ -28,8 +29,7 @@ const EmptyState = ({ title, subtitle, handler }: EmptyStateProps) => {
                         borderRadius: 60,
                     }} //TODO: Make a component for styles or add it to the theme
                 >
-                    {' '}
-                    REINTENTAR
+                    {title === 'Disculpa, has superado el límite de mensajes mensuales' ? 'CONTACTAR' : 'REINTENTAR'}
                 </Button>
             )}
         </Box>

@@ -1,4 +1,4 @@
-console.log("Extension ID: ", process.env.REACT_APP_EXTENSION_ID)
+// console.log("Extension ID: ", process.env.REACT_APP_EXTENSION_ID)
 export const DEVELOPMENT_EXTENSION_ID = "enkbjolcglilknggjlngokegcfgpebnl"
 export const EXTENSION_ID = process.env.REACT_APP_EXTENSION_ID!
 export const SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR = "div.pvs-profile-actions:not(.pvs-profile-actions--rtl.mr2)"

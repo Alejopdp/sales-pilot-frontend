@@ -19,19 +19,18 @@ if (chrome.action) {
         track('open-tab-extension', {})
     })
 }
-chrome.runtime.onConnectExternal.addListener((newPort) => {
-    console.log('On connect listener')
 
+const onMessageHandler = (newPort) => {
     // Save the port globally
     const port = newPort
 
-    setInterval(() => {
-        port.postMessage({ action: 'keep-alive' })
-    }, 1000 * 60)
+    // setInterval(() => {
+    //     port.postMessage({ action: 'keep-alive' })
+    // }, 1000 * 60)
 
     // Add a listener for incoming messages on the port
     port.onMessage.addListener(async (message) => {
-        console.log('Received message from content script:', message)
+        // console.log('Received message from content script:', message)
 
         if (!message.action) return
 
@@ -42,11 +41,11 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     message.data.access_token,
                     message.data.mockMessages
                 )
-                console.log('Message res: ', res)
+                // console.log('Message res: ', res)
                 if (res.status !== 201)
                     port.postMessage({
                         action: FETCH_PROFILE_MESSAGES,
-                        data: { status: res.status, data: { message: res.data.message } },
+                        data: { status: res.status, data: { ...res.data } },
                     })
                 if (res.status === 201) {
                     port.postMessage({
@@ -66,10 +65,10 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                 if (validate_session_res.status !== 200) {
                     port.postMessage({
                         action: VALIDATE_SESSION,
-                        data: { status: validate_session_res.status, data: { message: 'Ocurrio un error' } },
+                        data: { status: validate_session_res.status, data: { ...validate_session_res.data } },
                     })
                 } else {
-                    console.log('Successful reuqest')
+                    // console.log('Successful reuqest')
                     port.postMessage({
                         action: VALIDATE_SESSION,
                         data: {
@@ -82,11 +81,11 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                 break
 
             case SIGN_IN:
-                console.log('Connecting to socket')
+                // console.log('Connecting to socket')
                 const socket = io(WS_API_URL, { transports: ['websocket'] }) // TODO: Change w env var
 
                 socket.on('connect', () => {
-                    console.log('Connected to server, socket id: ', socket.id)
+                    // console.log('Connected to server, socket id: ', socket.id)
                     socket.emit('sign_in')
                     port.postMessage({
                         action: SIGN_IN,
@@ -99,7 +98,7 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     })
 
                     socket.on(WS_EVENT_SIGN_IN_SUCCESSFUL, (event) => {
-                        console.log('sign_in_successful: ', event)
+                        // console.log('sign_in_successful: ', event)
                         port.postMessage({
                             action: WS_EVENT_SIGN_IN_SUCCESSFUL,
                             data: {
@@ -120,12 +119,12 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     message.data.comment,
                     message.data.access_token
                 )
-                console.log('Message res: ', feedback_res)
+                // console.log('Message res: ', feedback_res)
 
                 if (feedback_res.status !== 200)
                     port.postMessage({
                         action: GIVE_FEEDBACK,
-                        data: { status: feedback_res.status, data: { message: 'Ocurrio un error' } },
+                        data: { status: feedback_res.status, data: { ...feedback_res.data } },
                     })
                 if (feedback_res.status === 200) {
                     port.postMessage({
@@ -142,14 +141,14 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
                     message.data.copiedMessage,
                     message.data.access_token
                 )
-                console.log('COPIED MESSAGE RES: ', save_copied_message_res)
+                // console.log('COPIED MESSAGE RES: ', save_copied_message_res)
 
                 if (save_copied_message_res.status !== 200) {
                     port.postMessage({
                         action: SAVE_COPIED_MESSAGE,
                         data: {
                             status: save_copied_message_res.status,
-                            data: { message: save_copied_message_res.data.message },
+                            data: { ...save_copied_message_res.data },
                         },
                     })
                 } else {
@@ -166,9 +165,10 @@ chrome.runtime.onConnectExternal.addListener((newPort) => {
         }
     })
 
-    // port.onDisconnect.addListener(deleteTimer)
-    // port._timer = setTimeout(forceReconnect, 250e3, port)
-})
+    port.onDisconnect.removeListener(onMessageHandler)
+}
+
+chrome.runtime.onConnectExternal.addListener(onMessageHandler)
 
 function forceReconnect(port) {
     deleteTimer(port)
@@ -180,3 +180,26 @@ function deleteTimer(port) {
         delete port._timer
     }
 }
+
+// function postMessage(port, message) {
+//     if (isPortOpen(port)) {
+//       port.postMessage(message);
+//     } else {
+//       cleanUpPort(port);
+//     }
+//   }
+
+//   // Función para verificar si el puerto está abierto
+//   function isPortOpen(port) {
+//     return port && port.sender && port.sender.tab && port.sender.tab.id;
+//   }
+
+//   // Función para limpiar el puerto
+//   function cleanUpPort(port) {
+//     if (!isPortOpen(port)) {
+//       deleteTimer(port);
+//       port.disconnect();
+//       port.onMessage.removeListener(onMessageHandler);
+//       port.onDisconnect.removeListener(onDisconnectHandler);
+//     }
+//   }

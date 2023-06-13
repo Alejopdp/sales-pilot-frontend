@@ -22,13 +22,12 @@ const useApi = () => {
         leadUrl: string
     ): Promise<Pick<AxiosResponse<MessageResponse | { message: string }>, 'data' | 'status'>> => {
         if (!connection || connection?.send === null) throw new Error('Connection to background not yet establsihed')
-        console.log('Sending message to port : ', connection?.port?.name)
         const res = await connection.send({
             action: 'FETCH_PROFILE_MESSAGES',
             data: {
                 leadUrl,
                 access_token: window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN),
-                mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
+                // mockMessages: process.env.REACT_APP_EXTENSION_ID === DEVELOPMENT_EXTENSION_ID,
             },
         })
 
