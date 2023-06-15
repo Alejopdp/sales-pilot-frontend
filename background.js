@@ -24,9 +24,9 @@ const onMessageHandler = (newPort) => {
     // Save the port globally
     const port = newPort
 
-    // setInterval(() => {
-    //     port.postMessage({ action: 'keep-alive' })
-    // }, 1000 * 60)
+    setInterval(() => {
+        port.postMessage({ action: 'keep-alive' })
+    }, 1000 * 29)
 
     // Add a listener for incoming messages on the port
     port.onMessage.addListener(async (message) => {
