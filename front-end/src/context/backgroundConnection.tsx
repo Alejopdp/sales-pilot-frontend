@@ -46,9 +46,9 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
 
     const connectToBackground = () => {
         const port = chrome.runtime.connect(EXTENSION_ID, { name: `background-${Math.random()}` })
-        // port.onMessage.addListener((message: any) => {
-        //     if (message.action === 'keep-alive') port.postMessage({ action: 'keep-alive-response' })
-        // })
+        port.onMessage.addListener((message: any) => {
+            if (message.action === 'keep-alive') port.postMessage({ action: 'keep-alive-response' })
+        })
 
         port.onDisconnect.addListener(() => {
             console.log('Disconnected from background...')
