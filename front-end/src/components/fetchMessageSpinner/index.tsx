@@ -3,8 +3,10 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 
 const messages = [
     'Analizando el perfil del usuario',
-    'Analizando la empresa',
+    'Analizando la empresa del usuario',
     'Consultando fuentes de información',
+    'Creando introducciones empáticas',
+    'Creando preguntas de cierre',
     'Generando mensajes con olor a humano',
 ]
 
@@ -20,7 +22,7 @@ const FetchMessageSpinner = () => {
     }, [spinnerIndex])
 
     useEffect(() => {
-        const intervalId = setInterval(intervalCallback, 3000)
+        const intervalId = setInterval(intervalCallback, 7000)
 
         return () => clearInterval(intervalId)
     }, [])
