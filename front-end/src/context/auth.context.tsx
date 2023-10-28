@@ -16,6 +16,7 @@ type AuthContextType = {
     isAuthenticating: boolean
     isAuthenticated: boolean
     getUserDataFromLocalStorage: () => { user_id: string | null; user_email_address: string | null }
+    logOutUser: () => void
 }
 
 export const AuthContextInitialState: AuthContextType = {
@@ -23,6 +24,7 @@ export const AuthContextInitialState: AuthContextType = {
     isAuthenticating: false,
     isAuthenticated: false,
     getUserDataFromLocalStorage: () => ({ user_id: '', user_email_address: '' }),
+    logOutUser: () => {},
 }
 
 export const AuthContext = React.createContext<AuthContextType>(AuthContextInitialState)
@@ -95,6 +97,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         trackAnalyticEvent('login-linkedin-sidebar', { authMethod: 'Linkedin' })
     }
 
+    const logOutUser = () => {
+        window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
+        window.localStorage.removeItem(LOCAL_STORAGE_USER_ID)
+        window.localStorage.removeItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS)
+        setIsAuthenticated(false)
+        setIsAuthenticating(false)
+    }
+
     const handleProductionSignIn = async () => {
         setIsAuthenticating(true)
         const redirect_uri = `${process.env.REACT_APP_API_URL}/auth/sign-in`
@@ -125,14 +135,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }}>
+        <AuthContext.Provider
+            value={{ handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage, logOutUser }}
+        >
             {children}
         </AuthContext.Provider>
     )
 }
 
 export const useAuth = (): AuthContextType => {
-    const { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage } = useContext(AuthContext)
+    const { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage, logOutUser } =
+        useContext(AuthContext)
 
-    return { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }
+    return { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage, logOutUser }
 }

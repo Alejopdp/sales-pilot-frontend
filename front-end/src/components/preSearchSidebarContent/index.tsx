@@ -18,7 +18,7 @@ const PreSearchSidebarContent = () => {
     const [error, setError] = useState<
         { statusCode: number; message: string; subMessage: string; hasButtonHandler: boolean } | undefined
     >(undefined)
-    const { getUserDataFromLocalStorage } = useAuth()
+    const { getUserDataFromLocalStorage, logOutUser } = useAuth()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
     const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex } = useMessageStore()
@@ -36,6 +36,7 @@ const PreSearchSidebarContent = () => {
     }
 
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
+        console.log('Is background cestablished:', isBackgroundConnectionEstablished)
         if (!isBackgroundConnectionEstablished) return
         reinitFetch()
         // fetchRecentActivity('https://www.linkedin.com/in/tomas-volonte')
@@ -43,21 +44,27 @@ const PreSearchSidebarContent = () => {
 
     useEffect(() => {
         if (!isBackgroundConnectionEstablished) return
+        console.log('Is establishedjeej')
+        console.log('This is the queue: ', queue)
         if (queue[0] !== undefined) {
+            console.log('This is the slicing: ', queue.slice(1))
             setQueue(queue.slice(1))
             triggerMessageSearchAfterSidebarIsOpened()
         }
 
         const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
+        console.log('This is the sidebar: ', sidebar)
         if (!sidebar) return
         //@ts-ignore
         if (sidebar[`${SALES_PILOT_SIDEBAR_ID}-observer`]) return
+        console.log('Does not hacve an observer')
 
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 //@ts-ignore
                 if (mutation.target.id === SALES_PILOT_SIDEBAR_ID) {
                     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
+                    console.log('SIDEBAR in mutatuion: ', sidebar)
                     if (!sidebar) return
 
                     if (sidebar.classList.contains(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)) {
@@ -118,6 +125,9 @@ const PreSearchSidebarContent = () => {
     const fetchMessages = async (profileUrl: string) => {
         try {
             const res = await getMessagsWithLinkedinUrl(profileUrl)
+            if (res.status === 403 || res.status === 401) {
+                logOutUser()
+            }
             if (res.status !== 201) {
                 //@ts-ignore
                 setError(res.data)

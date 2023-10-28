@@ -27,6 +27,7 @@
 /front-end/.env.production
 packed.crx
 packed/
+packed.zip
 
 npm-debug.log*
 yarn-debug.log*
