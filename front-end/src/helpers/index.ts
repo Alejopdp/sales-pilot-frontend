@@ -14,8 +14,6 @@ export async function isALinkedinProfile(url: string): Promise<boolean> {
 // TODO: Make it usefull in development enviroment
 export function isALinkedinProfileUrl(url: string): boolean {
     const pattern = /(https?:\/\/)?(www\.)?linkedin\.com\/in\/(.*)/i;
-    console.log("URL being tested: ", url)
-    console.log("Is a linkedin profile URL: ", pattern.test(url))
 
     return pattern.test(url);
 }
@@ -27,9 +25,6 @@ function getActivityType(doc: any) {
     const postSelector = doc.querySelector('article.pv-post-entity artdeco-card');
     const shareSelector = doc.querySelector('div.feed-shared-update-v2');
     const documentSelector = doc.querySelector('div.feed-shared-update-v2');
-    console.log("Post Selector: ", postSelector)
-    console.log("Share selector: ", shareSelector)
-    console.log("Document selector: ", documentSelector)
 
 
     if (postSelector) return 'Post';
@@ -43,16 +38,12 @@ function getShareContent(share: any) {
     const targetElement = share.querySelector('.feed-shared-update-v2__description .break-words span[dir="ltr"]');
     const desiredText = targetElement.innerHTML;
 
-    console.log(desiredText);
-
     return desiredText
 }
 
 function getPostContent(post: any) {
     const targetElement = post.querySelector('.pv-post-entity__container h1');
     const desiredText = targetElement.innerText;
-
-    console.log(desiredText);
 
     return desiredText
 }

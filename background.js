@@ -5,14 +5,23 @@ import {
     GIVE_FEEDBACK,
     SAVE_COPIED_MESSAGE,
     SIGN_IN,
+    UPDATE_FORBBIDEN_WORDS,
     VALIDATE_SESSION,
     WS_EVENT_SIGN_IN_SUCCESSFUL,
 } from './api_actions'
-import { getMessagsWithLinkedinUrl, giveFeedback, saveCopiedMessage, validateSession } from './requests'
+import {
+    getMessagsWithLinkedinUrl,
+    giveFeedback,
+    saveCopiedMessage,
+    updateForbiddenWords,
+    validateSession,
+} from './requests'
 import { init, track } from '@amplitude/analytics-browser'
-const WS_API_URL = 'ws://api.development.salespilot.app'
+const WS_API_URL = 'ws://localhost:3000'
+// const WS_API_URL = 'ws://api.development.salespilot.app'
+const AMPLITUDE_ID = '84794981b424b69ef82526112d599fcd'
 
-init('84794981b424b69ef82526112d599fcd')
+init(AMPLITUDE_ID)
 
 if (chrome.action) {
     chrome.action.onClicked.addListener(function (tab) {
@@ -21,17 +30,13 @@ if (chrome.action) {
 }
 
 const onMessageHandler = (newPort) => {
-    // Save the port globally
     const port = newPort
 
     setInterval(() => {
         port.postMessage({ action: 'keep-alive' })
     }, 1000 * 29)
 
-    // Add a listener for incoming messages on the port
     port.onMessage.addListener(async (message) => {
-        // console.log('Received message from content script:', message)
-
         if (!message.action) return
 
         switch (message.action) {
@@ -41,7 +46,6 @@ const onMessageHandler = (newPort) => {
                     message.data.access_token,
                     message.data.mockMessages
                 )
-                // console.log('Message res: ', res)
                 if (res.status !== 201)
                     port.postMessage({
                         action: FETCH_PROFILE_MESSAGES,
@@ -62,30 +66,17 @@ const onMessageHandler = (newPort) => {
             case VALIDATE_SESSION:
                 const validate_session_res = await validateSession(message.data.access_token)
 
-                if (validate_session_res.status !== 200) {
-                    port.postMessage({
-                        action: VALIDATE_SESSION,
-                        data: { status: validate_session_res.status, data: { ...validate_session_res.data } },
-                    })
-                } else {
-                    // console.log('Successful reuqest')
-                    port.postMessage({
-                        action: VALIDATE_SESSION,
-                        data: {
-                            status: validate_session_res.status,
-                            data: undefined,
-                        },
-                    })
-                }
+                port.postMessage({
+                    action: VALIDATE_SESSION,
+                    data: { status: validate_session_res.status, data: { ...validate_session_res.data } },
+                })
 
                 break
 
             case SIGN_IN:
-                // console.log('Connecting to socket')
                 const socket = io(WS_API_URL, { transports: ['websocket'] }) // TODO: Change w env var
 
                 socket.on('connect', () => {
-                    // console.log('Connected to server, socket id: ', socket.id)
                     socket.emit('sign_in')
                     port.postMessage({
                         action: SIGN_IN,
@@ -98,14 +89,12 @@ const onMessageHandler = (newPort) => {
                     })
 
                     socket.on(WS_EVENT_SIGN_IN_SUCCESSFUL, (event) => {
-                        // console.log('sign_in_successful: ', event)
                         port.postMessage({
                             action: WS_EVENT_SIGN_IN_SUCCESSFUL,
                             data: {
                                 status: 200,
                                 access_token: event.access_token,
-                                user_id: event.user_id,
-                                user_email_address: event.user_email_address,
+                                user: event.user,
                             },
                         })
                     })
@@ -119,7 +108,6 @@ const onMessageHandler = (newPort) => {
                     message.data.comment,
                     message.data.access_token
                 )
-                // console.log('Message res: ', feedback_res)
 
                 if (feedback_res.status !== 200)
                     port.postMessage({
@@ -141,7 +129,6 @@ const onMessageHandler = (newPort) => {
                     message.data.copiedMessage,
                     message.data.access_token
                 )
-                // console.log('COPIED MESSAGE RES: ', save_copied_message_res)
 
                 if (save_copied_message_res.status !== 200) {
                     port.postMessage({
@@ -162,6 +149,26 @@ const onMessageHandler = (newPort) => {
             case 'TRACK_ANALYTIC_EVENT':
                 track(message.data.eventName, message.data.eventProperties)
                 break
+
+            case UPDATE_FORBBIDEN_WORDS:
+                const forbidden_words_res = await updateForbiddenWords(
+                    message.data.forbiddenWords,
+                    message.data.access_token
+                )
+
+                if (forbidden_words_res.status !== 200) {
+                    port.postMessage({
+                        action: UPDATE_FORBBIDEN_WORDS,
+                        data: { status: forbidden_words_res.status, data: { ...forbidden_words_res.data } },
+                    })
+                } else {
+                    port.postMessage({
+                        action: UPDATE_FORBBIDEN_WORDS,
+                        data: {
+                            status: forbidden_words_res.status,
+                        },
+                    })
+                }
         }
     })
 
@@ -180,26 +187,3 @@ function deleteTimer(port) {
         delete port._timer
     }
 }
-
-// function postMessage(port, message) {
-//     if (isPortOpen(port)) {
-//       port.postMessage(message);
-//     } else {
-//       cleanUpPort(port);
-//     }
-//   }
-
-//   // Función para verificar si el puerto está abierto
-//   function isPortOpen(port) {
-//     return port && port.sender && port.sender.tab && port.sender.tab.id;
-//   }
-
-//   // Función para limpiar el puerto
-//   function cleanUpPort(port) {
-//     if (!isPortOpen(port)) {
-//       deleteTimer(port);
-//       port.disconnect();
-//       port.onMessage.removeListener(onMessageHandler);
-//       port.onDisconnect.removeListener(onDisconnectHandler);
-//     }
-//   }

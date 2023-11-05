@@ -7,11 +7,12 @@ type EmptyStateProps = {
     subtitle: string
     showHandler?: boolean
     handler?: (e: any) => void
+    img?: string
 }
-const EmptyState = ({ title, subtitle, showHandler, handler }: EmptyStateProps) => {
+const EmptyState = ({ title, subtitle, showHandler, handler, img }: EmptyStateProps) => {
     return (
         <Box display="flex" flexDirection={'column'} justifyContent={'center'} alignItems="center">
-            <img src={EmptyBox} alt="empty-box" width={256} style={{ marginBottom: 16 }} />
+            <img src={img ?? EmptyBox} alt="empty-box" width={256} style={{ marginBottom: 16 }} />
             <Typography variant="h2" marginBottom={2} textAlign="center">
                 {title}
             </Typography>

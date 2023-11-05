@@ -6,6 +6,7 @@ import PreSearchSidebarContent from './components/preSearchSidebarContent'
 import { useAuth } from './context/auth.context'
 import { CircularProgress } from '@mui/material'
 import SignIn from './components/signIn'
+import FooterMenu from './components/footerMenu'
 
 function toggleSidebar() {
     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
@@ -44,6 +45,7 @@ function DevelopmentApp() {
             <div id={SALES_PILOT_SIDEBAR_ID} className="sales-pilot-sidebar">
                 <Navbar />
                 {isAuthenticated ? <PreSearchSidebarContent /> : <SignIn />}
+                <FooterMenu />
             </div>
         </>
     )

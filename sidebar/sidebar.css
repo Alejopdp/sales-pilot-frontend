@@ -16,6 +16,14 @@ textarea {
     z-index: 999999;
 }
 
+button.menuItem span.MuiBottomNavigationAction-label {
+    font-size: 14px;
+}
+
+button.menuItem.Mui-selected span.MuiBottomNavigationAction-label {
+    font-size: 16px;
+}
+
 @media (max-width: 900px) {
     .sales-pilot-sidebar {
         width: 80vw;
@@ -27,7 +35,7 @@ textarea {
     transform: translateX(0);
     padding-left: 16px;
     padding-right: 16px;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .sales-pilot-sidebar-inner-container {
