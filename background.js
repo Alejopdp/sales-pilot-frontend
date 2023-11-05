@@ -17,8 +17,8 @@ import {
     validateSession,
 } from './requests'
 import { init, track } from '@amplitude/analytics-browser'
-const WS_API_URL = 'ws://localhost:3000'
-// const WS_API_URL = 'ws://api.development.salespilot.app'
+// const WS_API_URL = 'ws://localhost:3000'
+const WS_API_URL = 'ws://api.development.salespilot.app'
 const AMPLITUDE_ID = '84794981b424b69ef82526112d599fcd'
 
 init(AMPLITUDE_ID)
