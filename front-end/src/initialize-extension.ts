@@ -10,14 +10,12 @@ export function toggleSidebar() {
 
 function loadSidebar() {
     if (document.querySelector(`#${SALES_PILOT_SCRIPT_ID}`)) return
-    // console.log("Loading sidebar script")
     const loadSidebarScript = document.createElement('script')
     loadSidebarScript.setAttribute('id', SALES_PILOT_SCRIPT_ID)
     //@ts-ignore
     loadSidebarScript.setAttribute('src', chrome.runtime.getURL('/react/js/main.js'))
     loadSidebarScript.setAttribute('type', 'module')
     document.body.appendChild(loadSidebarScript)
-    // console.log("Sidebar script loaded")
     loadSidebarStyles()
     setTimeout(() => {
         closeSidebarOnOutsideClick()
@@ -46,7 +44,6 @@ function setUrlChangeListener() {
         setTimeout(() => {
             const hasUrlChanged = actualUrl !== window.location.href
             actualUrl = window.location.href
-            // console.log("Has url changed: ", hasUrlChanged)
             if (hasUrlChanged && isALinkedinProfileUrl(window.location.href)) {
                 addSalesPilotButtonToProfile();
             }
@@ -95,7 +92,6 @@ function addSalesPilotButtonToProfile() {
     if (document.querySelector(`#${SALES_PILOT_PROFILE_BUTTON_ID}`)) return
     const anchor = document.querySelector(SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR)
     if (!anchor) return
-    // console.log("Anchor found!")
     const button = createProfileButton()
     button.className = anchor.querySelector("button")?.className ?? ""
     button.className = `${button.className} sales-pilot-button`
@@ -109,9 +105,7 @@ function addSalesPilotButtonToProfile() {
         linkedinIcon?.appendChild(iconcito)
     }
 
-    // console.log("Profile button created")
     anchor.appendChild(button)
-    // console.log("Profile button appended to anchor")
 
 }
 
@@ -129,7 +123,6 @@ function addSalesPilotButtonToBubbleChat() {
             if (element.querySelector('#sales-pilot-chat-button')) return
             const button = document.createElement('button')
             if (!button) {
-                // console.log("Button not found at addSalesPilotButtonToBubbleChat function")
                 return
             }
             button.id = 'sales-pilot-chat-button'
@@ -150,7 +143,6 @@ function addSalesPilotButtonToBubbleChat() {
 
 
 function initializeExtension() {
-    // console.log("Initializing extension")
 
     const body = document.querySelector('body')
     if (body) {

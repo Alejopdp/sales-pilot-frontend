@@ -6,23 +6,33 @@ import {
     VALIDATE_SESSION,
     WS_EVENT_SIGN_IN_SUCCESSFUL,
 } from '../constants'
-import axios from 'axios'
 import { useBackgroundConnection } from './backgroundConnection'
 import { useMessageStore } from './messages.context'
 import useApi from '../hooks/useApi'
+import { User } from '../types'
 
 type AuthContextType = {
+    user: User | null
+    setUser: (user: User | null) => void
     handleSignIn: () => void
     isAuthenticating: boolean
     isAuthenticated: boolean
-    getUserDataFromLocalStorage: () => { user_id: string | null; user_email_address: string | null }
+    getUserDataFromLocalStorage: () => {
+        user_id: string | null
+        user_email_address: string | null
+        access_token: string | null
+    }
+    logOutUser: () => void
 }
 
 export const AuthContextInitialState: AuthContextType = {
     handleSignIn: () => {},
     isAuthenticating: false,
     isAuthenticated: false,
-    getUserDataFromLocalStorage: () => ({ user_id: '', user_email_address: '' }),
+    getUserDataFromLocalStorage: () => ({ user_id: '', user_email_address: '', access_token: '' }),
+    logOutUser: () => {},
+    user: null,
+    setUser: () => {},
 }
 
 export const AuthContext = React.createContext<AuthContextType>(AuthContextInitialState)
@@ -31,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { connection } = useBackgroundConnection()
     const { setQueue } = useMessageStore()
     const { trackAnalyticEvent } = useApi()
+    const [user, setUser] = useState<User | null>(null)
     const [isAuthenticating, setIsAuthenticating] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
@@ -48,30 +59,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const getUserDataFromLocalStorage = () => {
         const user_id = window.localStorage.getItem(LOCAL_STORAGE_USER_ID)
         const user_email_address = window.localStorage.getItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS)
-        return { user_id, user_email_address }
+        const access_token = window.localStorage.getItem(LOCAL_STORAGE_ACCESS_TOKEN)
+
+        return { user_id, user_email_address, access_token }
     }
 
     const validateAccessToken = async (access_token: string) => {
         try {
-            const res =
-                process.env.NODE_ENV === 'production'
-                    ? await validateAccessTokenProductionRes(access_token)
-                    : await validateAccessTokenDevelopmentRes(access_token)
-
-            if (res.status === 200) {
+            const res = await validateAccessTokenProductionRes(access_token)
+            if (res?.status === 200) {
                 setIsAuthenticating(false)
+                setUser(res.data!.user) // TODO: Agregarlo en la respuesta delñ back
                 setIsAuthenticated(true)
-                // setQueue(['scrape'])
             } else {
                 setIsAuthenticating(false)
                 setIsAuthenticated(false)
-                if (res.status !== 499) {
+                if (res && res.status !== 499) {
                     window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
                     window.localStorage.removeItem(LOCAL_STORAGE_USER_ID)
                 }
             }
         } catch (error) {
-            console.log('Claramente entra aca')
             setIsAuthenticating(false)
             setIsAuthenticated(false)
             window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
@@ -79,20 +87,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const validateAccessTokenDevelopmentRes = async (access_token: string) => {
-        return await axios.get(`${process.env.REACT_APP_API_URL}/auth/validate-session`, {
-            headers: { authorization: access_token },
-        })
-    }
-
     const validateAccessTokenProductionRes = async (access_token: string) => {
-        if (connection === null || connection.send === null) return { status: 499 }
-        const res = await connection.send({ action: VALIDATE_SESSION, data: { access_token } })
+        if (connection === null || connection.send === null) return { status: 499, data: null }
+
+        const res = await connection.send<{ user: User }>({ action: VALIDATE_SESSION, data: { access_token } })
+
         return res
     }
     const handleSignIn = () => {
         handleProductionSignIn()
         trackAnalyticEvent('login-linkedin-sidebar', { authMethod: 'Linkedin' })
+    }
+
+    const logOutUser = () => {
+        window.localStorage.removeItem(LOCAL_STORAGE_ACCESS_TOKEN)
+        window.localStorage.removeItem(LOCAL_STORAGE_USER_ID)
+        window.localStorage.removeItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS)
+        setIsAuthenticated(false)
+        setIsAuthenticating(false)
     }
 
     const handleProductionSignIn = async () => {
@@ -103,36 +115,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setIsAuthenticating(false)
             return
         }
-        connection.port.onMessage.addListener((message: any, port: any) => {
-            if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
-                if (message.data.status === 200) {
-                    window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token)
-                    window.localStorage.setItem(LOCAL_STORAGE_USER_ID, message.data.user_id)
-                    window.localStorage.setItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS, message.data.user_email_address)
-                    setIsAuthenticating(false)
-                    setIsAuthenticated(true)
-                    setQueue(['scrape'])
+
+        connection.port.onMessage.addListener(
+            (message: { action: string; data: { status: number; user: User; access_token: string } }, port: any) => {
+                if (message.action === WS_EVENT_SIGN_IN_SUCCESSFUL) {
+                    if (message.data.status === 200) {
+                        window.localStorage.setItem(LOCAL_STORAGE_ACCESS_TOKEN, message.data.access_token)
+                        window.localStorage.setItem(LOCAL_STORAGE_USER_ID, message.data.user.id)
+                        window.localStorage.setItem(LOCAL_STORAGE_USER_EMAIL_ADDRESS, message.data.user.email)
+
+                        setIsAuthenticating(false)
+                        setIsAuthenticated(true)
+                        setUser(message.data.user)
+                        setQueue(['scrape'])
+                    }
                 }
             }
-        })
-        const res = await connection.send({ action: 'SIGN_IN' })
+        )
+        const res = await connection.send<{ socketId: string }>({ action: 'SIGN_IN' })
 
         window
             .open(
-                `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.REACT_APP_LINKEDIN_CLIENT_ID}&redirect_uri=${redirect_uri}&state=${res.data.socketId}&scope=r_liteprofile%20r_emailaddress`
+                `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${process.env.REACT_APP_LINKEDIN_CLIENT_ID}&redirect_uri=${redirect_uri}&state=${res?.data.socketId}&scope=r_liteprofile%20r_emailaddress`
             )
             ?.focus()
     }
 
     return (
-        <AuthContext.Provider value={{ handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }}>
+        <AuthContext.Provider
+            value={{
+                handleSignIn,
+                isAuthenticating,
+                isAuthenticated,
+                getUserDataFromLocalStorage,
+                logOutUser,
+                user,
+                setUser,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
 }
 
 export const useAuth = (): AuthContextType => {
-    const { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage } = useContext(AuthContext)
+    const { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage, logOutUser, user, setUser } =
+        useContext(AuthContext)
 
-    return { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage }
+    return { handleSignIn, isAuthenticating, isAuthenticated, getUserDataFromLocalStorage, logOutUser, user, setUser }
 }

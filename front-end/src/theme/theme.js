@@ -40,6 +40,7 @@ export const theme = createTheme({
         },
         body1: {
             color: '#000000',
+            fontSize: 16,
         },
         body2: {
             color: '#000000',

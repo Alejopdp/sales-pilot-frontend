@@ -4,14 +4,14 @@ import { SALES_PILOT_PROFILE_BUTTON_ID, SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_
 import Navbar from './components/navbar'
 import PreSearchSidebarContent from './components/preSearchSidebarContent'
 import { useAuth } from './context/auth.context'
-import { CircularProgress, TextField, TextareaAutosize } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 import SignIn from './components/signIn'
-import Textarea from './components/textarea'
+import FooterMenu from './components/footerMenu'
 
 function toggleSidebar() {
     const sidebar = document.querySelector(`#${SALES_PILOT_SIDEBAR_ID}`)
     if (!sidebar) {
-        alert('Sidebar is null')
+        console.error('Sidebar is null')
         return
     }
     sidebar.classList.toggle(SALES_PILOT_SIDEBAR_ACTIVE_CLASS)
@@ -45,6 +45,7 @@ function DevelopmentApp() {
             <div id={SALES_PILOT_SIDEBAR_ID} className="sales-pilot-sidebar">
                 <Navbar />
                 {isAuthenticated ? <PreSearchSidebarContent /> : <SignIn />}
+                <FooterMenu />
             </div>
         </>
     )

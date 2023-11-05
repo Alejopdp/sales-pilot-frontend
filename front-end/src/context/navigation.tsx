@@ -5,7 +5,11 @@ interface NavigationProviderProps {
     children: React.ReactNode
 }
 
-type NavigationRoute = 'home' | 'profile'
+export type NavigationRoute = 'home' | 'profile' | 'forbidden_words' | 'my_data'
+export const SUB_ROUTES_MAP = {
+    home: ['home'],
+    profile: ['profile', 'forbidden_words', 'my_data'],
+}
 
 const navigationInitialState = 'home'
 

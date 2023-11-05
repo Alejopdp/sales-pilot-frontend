@@ -6,15 +6,15 @@ interface IMessage {
     data?: any
 }
 
-interface IBackgroundResponse {
+export interface IBackgroundResponse<T> {
     status: number
-    data: any
+    data: T
     error?: string
 }
 
 interface IBackgroundConnection {
     port: any | null
-    send: ((message: IMessage) => Promise<IBackgroundResponse>) | null
+    send: <T>(message: IMessage) => Promise<IBackgroundResponse<T>> | null
     close: (() => void) | null
 }
 
@@ -38,7 +38,7 @@ interface IBackgroundProviderProps {
 
 const connectionIniitialState: IBackgroundConnection = {
     port: null,
-    send: null,
+    send: (message: IMessage) => null,
     close: null,
 }
 export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.Element => {
@@ -51,13 +51,12 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
         })
 
         port.onDisconnect.addListener(() => {
-            console.log('Disconnected from background...')
             setConnection({ ...connectionIniitialState })
             setTimeout(() => connectToBackground(), 1000)
         })
         setConnection({
             send: (message: IMessage, callback?: () => void) =>
-                new Promise<IBackgroundResponse>((resolve) => {
+                new Promise<IBackgroundResponse<any>>((resolve) => {
                     port.postMessage(message)
 
                     port.onMessage.addListener((response: any) => {
@@ -66,7 +65,7 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
                         }
                     })
                 }),
-            close: () => port.disconnect(),
+            close: () => port?.disconnect(),
             port,
         })
     }
@@ -85,7 +84,8 @@ export const BackgroundProvider = ({ children }: IBackgroundProviderProps): JSX.
         return () => {
             if (process.env.NODE_ENV !== 'development') {
                 console.log('Disconnecting from background...')
-                connection.port.disconnect()
+                connection.port?.disconnect()
+                console.log('disconnected')
                 setConnection(connectionIniitialState)
             }
         }

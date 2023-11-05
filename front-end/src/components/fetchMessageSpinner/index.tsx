@@ -5,9 +5,13 @@ const messages = [
     'Analizando el perfil del usuario',
     'Analizando la empresa del usuario',
     'Consultando fuentes de información',
-    'Creando introducciones empáticas',
-    'Creando preguntas de cierre',
+    'Combinando la información de los perfiles para definir los mejores ice-breakers',
+    'Creando una intro empática con la información scrappeada',
+    'Seleccionando las mejores variables para las preguntas de cierre',
+    'Creando preguntas de cierre en base a tus producto/servicio',
     'Generando mensajes con olor a humano',
+    'Detectamos que ChatGPT está tardando mas de lo normal, por favor espera un poco mas',
+    'Ya casi tenemos tus mensajes',
 ]
 
 const FetchMessageSpinner = () => {
@@ -22,7 +26,7 @@ const FetchMessageSpinner = () => {
     }, [spinnerIndex])
 
     useEffect(() => {
-        const intervalId = setInterval(intervalCallback, 7000)
+        const intervalId = setInterval(intervalCallback, 10000)
 
         return () => clearInterval(intervalId)
     }, [])

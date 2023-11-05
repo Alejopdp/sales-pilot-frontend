@@ -2,6 +2,7 @@
 
 -   Production ID => gjobfjilbclolpaeinpedbhbehdcpebj
 -   Staging ID => bdogiafgildacfheaaenopoofinjknkb
+-   Development ID => enkbjolcglilknggjlngokegcfgpebnl
 
 ## How to Build
 
@@ -42,3 +43,10 @@
 ## How to Debug (Background service)
 
 ## How to inject script
+
+## How to use the extension locally
+
+1. Navigate to chrom://extensions in your browser
+2. Click the "Load unpacked" button.
+3. Select the directory where you have the manifest.json
+4. Make sure you have the development ID set in the .env file

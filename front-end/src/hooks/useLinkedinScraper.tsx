@@ -52,7 +52,6 @@ const useLinkedinScraper = () => {
     }
 
     const getComplexExperience = (list: any, company: string): ProfileExperience[] => {
-        // console.log("Complex element: ")
         const experiences: ProfileExperience[] = []
         const listElements = list.querySelectorAll('li')
 
@@ -83,7 +82,6 @@ const useLinkedinScraper = () => {
         const experienceList = exprienceSection?.querySelector('ul.pvs-list')
         const liElements = experienceList?.querySelectorAll('.artdeco-list__item')
         if (!liElements || liElements === null || liElements.length === 0) return []
-        console.log('List: ', liElements)
         for (const liElement of liElements) {
             if (liElement.querySelector('ul.pvs-list')) {
                 const expriencesInCompany = getComplexExperience(
@@ -97,8 +95,6 @@ const useLinkedinScraper = () => {
             }
         }
 
-        console.log('Experiences: ', experiences)
-
         return experiences
     }
 
@@ -106,5 +102,3 @@ const useLinkedinScraper = () => {
 }
 
 export default useLinkedinScraper
-
-// [{jobTitle: "Product Owner - Corporate Platform", company: "Novolabs", modality: "Jornada completa", dateRange: "nov. 2019 - actualidad", time: "3 años 5 meses", location: "Valencia y alrededores"}]

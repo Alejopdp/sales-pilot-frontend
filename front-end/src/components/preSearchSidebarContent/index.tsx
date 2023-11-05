@@ -15,13 +15,11 @@ import FetchMessageSpinner from '../fetchMessageSpinner'
 import { useAuth } from '../../context/auth.context'
 
 const PreSearchSidebarContent = () => {
-    const [error, setError] = useState<
-        { statusCode: number; message: string; subMessage: string; hasButtonHandler: boolean } | undefined
-    >(undefined)
     const { getUserDataFromLocalStorage } = useAuth()
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const { getMessagsWithLinkedinUrl, isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
-    const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex } = useMessageStore()
+    const [isSubmitting, setIsSubmitting] = useState(false) // TODO: Pass to context to show spinner
+    const { isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
+    const { response, setResponse, fetchMessages, queue, setQueue, messageIndex, setMessageIndex, error, setError } =
+        useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
@@ -75,8 +73,7 @@ const PreSearchSidebarContent = () => {
         observer.observe(sidebar!, { attributes: true })
 
         return () => {
-            console.log('Unmounting sidebar')
-            observer.disconnect()
+            observer?.disconnect()
             //@ts-ignore
             sidebar[`${SALES_PILOT_SIDEBAR_ID}-observer`] = undefined
         }
@@ -112,27 +109,11 @@ const PreSearchSidebarContent = () => {
             return
         }
 
-        await fetchMessages(url)
+        await getMessages(url)
     }
 
-    const fetchMessages = async (profileUrl: string) => {
-        try {
-            const res = await getMessagsWithLinkedinUrl(profileUrl)
-            if (res.status !== 201) {
-                //@ts-ignore
-                setError(res.data)
-            }
-            const data = res.data as MessageResponse
-            setResponse({ ...data, messages: data.messages, lastUrl: profileUrl })
-        } catch (error) {
-            console.log(error)
-            setError({
-                statusCode: 500,
-                message: 'Ocurrió un error inesperado',
-                subMessage: '',
-                hasButtonHandler: false,
-            })
-        }
+    const getMessages = async (profileUrl: string) => {
+        await fetchMessages(profileUrl)
 
         setIsSubmitting(false)
     }
@@ -161,8 +142,8 @@ const PreSearchSidebarContent = () => {
         const messageId = response.messages[messageIndex].id
         const res = await giveFeedback(messageId, isPositive, comment)
 
-        if (res.status !== 200) alert('Error')
-        if (res.status === 200) {
+        if (res?.status !== 200) alert('Error')
+        if (res?.status === 200) {
             setResponse({
                 ...response,
                 messages: response.messages.map((message) =>
