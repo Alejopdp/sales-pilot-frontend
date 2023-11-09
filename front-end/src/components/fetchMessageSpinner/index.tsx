@@ -34,7 +34,7 @@ const FetchMessageSpinner = () => {
     return (
         <Box display="flex" flexDirection={'column'} alignItems={'center'}>
             <CircularProgress size={50} />
-            <Typography variant="subtitle1" marginTop={2}>
+            <Typography variant="subtitle1" marginTop={2} textAlign={'center'}>
                 {messages[spinnerIndex]}
             </Typography>
         </Box>

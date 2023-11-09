@@ -10,16 +10,25 @@ import Feedback from '../feedback'
 import { SALES_PILOT_SIDEBAR_ACTIVE_CLASS, SALES_PILOT_SIDEBAR_ID } from '../../constants'
 import ProfileInSidebar from '../profileInSidebar'
 import { useMessageStore } from '../../context/messages.context'
-import { MessageResponse } from '../../types'
 import FetchMessageSpinner from '../fetchMessageSpinner'
 import { useAuth } from '../../context/auth.context'
 
 const PreSearchSidebarContent = () => {
     const { getUserDataFromLocalStorage } = useAuth()
-    const [isSubmitting, setIsSubmitting] = useState(false) // TODO: Pass to context to show spinner
+    // const [isSubmitting, setIsSubmitting] = useState(false) // TODO: Pass to context to show spinner
     const { isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
-    const { response, setResponse, fetchMessages, queue, setQueue, messageIndex, setMessageIndex, error, setError } =
-        useMessageStore()
+    const {
+        response,
+        setResponse,
+        fetchMessages,
+        queue,
+        setQueue,
+        messageIndex,
+        setMessageIndex,
+        error,
+        setError,
+        isFetching,
+    } = useMessageStore()
     const { selectedProfile, setSelectedProfile } = useNavigation()
     const [isFeedbackSubmitting, setIsFeedbackSubmitting] = useState(false)
     const [isFeedbackGranted, setIsFeedbackGranted] = useState(false)
@@ -81,7 +90,7 @@ const PreSearchSidebarContent = () => {
 
     const handleSubmit = async () => {
         setError(undefined)
-        setIsSubmitting(true)
+        // setIsSubmitting(true)
         const url = window.location.href
 
         if (!isLinkedInURL(url)) {
@@ -91,7 +100,7 @@ const PreSearchSidebarContent = () => {
                 subMessage: '',
                 hasButtonHandler: false,
             })
-            setIsSubmitting(false)
+            // setIsSubmitting(false)
 
             return
         }
@@ -104,7 +113,7 @@ const PreSearchSidebarContent = () => {
                 subMessage: '',
                 hasButtonHandler: false,
             })
-            setIsSubmitting(false)
+            // setIsSubmitting(false)
 
             return
         }
@@ -115,7 +124,7 @@ const PreSearchSidebarContent = () => {
     const getMessages = async (profileUrl: string) => {
         await fetchMessages(profileUrl)
 
-        setIsSubmitting(false)
+        // setIsSubmitting(false)
     }
 
     const setProfileIfScrape = () => {
@@ -169,7 +178,7 @@ const PreSearchSidebarContent = () => {
                     handler={handleSubmit}
                     showHandler={error.hasButtonHandler}
                 />
-            ) : isSubmitting ? (
+            ) : isFetching ? (
                 <FetchMessageSpinner />
             ) : (
                 <>

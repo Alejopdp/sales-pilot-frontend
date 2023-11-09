@@ -20,7 +20,7 @@
     },
     "host_permissions": ["https://*.linkedin.com/*"],
     "content_security_policy": {
-        "extension_pages": "script-src 'self'; connect-src ws://localhost:3000 ws://api.salespilot.app ws://api.development.salespilot.app http://localhost:3000 https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com/* https://api2.amplitude.com/2/httpapi; object-src 'self'"
+        "extension_pages": "script-src 'self'; connect-src ws://localhost:3000 ws://api.salespilot.app ws://api.development.salespilot.app https://localhost:3000 http://localhost:3000 https://api.salespilot.app https://api.development.salespilot.app https://*.linkedin.com/* https://api2.amplitude.com/2/httpapi; object-src 'self'"
     },
     "action": {
         "default_popup": "./public/popup.html"
