@@ -50,3 +50,4 @@
 2. Click the "Load unpacked" button.
 3. Select the directory where you have the manifest.json
 4. Make sure you have the development ID set in the .env file
+5. Run npm run build:unpacked in the root folder

@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react'
 import { MessageResponse } from '../types'
 import useApi from '../hooks/useApi'
 
@@ -29,6 +29,7 @@ type MessageContextType = {
             | undefined
         >
     >
+    isFetching: boolean
 }
 
 export const MessageContextInitialState: MessageContextType = {
@@ -47,6 +48,7 @@ export const MessageContextInitialState: MessageContextType = {
     fetchMessages: async () => {},
     error: undefined,
     setError: () => {},
+    isFetching: false,
 }
 
 export const MessageContext = React.createContext<MessageContextType>(MessageContextInitialState)
@@ -57,11 +59,13 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     >(undefined)
     const [response, setResponse] = useState<MessageResponse>(MessageContextInitialState.response)
     const [messageIndex, setMessageIndex] = useState<number>(0)
+    const [isFetching, setIsFetching] = useState<boolean>(false)
     const [queue, setQueue] = useState<string[]>([])
     const { getMessagsWithLinkedinUrl } = useApi()
 
     const fetchMessages = async (leadUrl: string) => {
         try {
+            setIsFetching(true)
             const res = await getMessagsWithLinkedinUrl(leadUrl)
             const data = res.data
 
@@ -82,6 +86,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 messages: data.messages ?? [],
                 lastUrl: leadUrl,
             })
+            setIsFetching(false)
         } catch (error) {
             setError({
                 statusCode: 400,
@@ -89,6 +94,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 subMessage: '',
                 hasButtonHandler: false,
             })
+            setIsFetching(false)
         }
     }
     return (
@@ -103,6 +109,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 fetchMessages,
                 error,
                 setError,
+                isFetching,
             }}
         >
             {children}
@@ -111,8 +118,29 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 }
 
 export const useMessageStore = (): MessageContextType => {
-    const { response, setResponse, queue, setQueue, messageIndex, setMessageIndex, fetchMessages, error, setError } =
-        useContext(MessageContext)
+    const {
+        response,
+        setResponse,
+        queue,
+        setQueue,
+        messageIndex,
+        setMessageIndex,
+        fetchMessages,
+        error,
+        setError,
+        isFetching,
+    } = useContext(MessageContext)
 
-    return { messageIndex, response, setResponse, queue, setQueue, setMessageIndex, fetchMessages, error, setError }
+    return {
+        messageIndex,
+        response,
+        setResponse,
+        queue,
+        setQueue,
+        setMessageIndex,
+        fetchMessages,
+        error,
+        setError,
+        isFetching,
+    }
 }
