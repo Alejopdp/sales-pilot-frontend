@@ -24,7 +24,7 @@
 
 1. Once you've made and tested all your release changes, go to `/manifest.json` and update the "version" field.
 
-2. Also update the "version" field in `/package.json` to match the manifest
+2. Also run te command npm version as the last commit to match the manifest
 
 3. Build for production
 

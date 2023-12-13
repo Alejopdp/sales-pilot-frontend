@@ -14,8 +14,7 @@ import FetchMessageSpinner from '../fetchMessageSpinner'
 import { useAuth } from '../../context/auth.context'
 
 const PreSearchSidebarContent = () => {
-    const { getUserDataFromLocalStorage } = useAuth()
-    // const [isSubmitting, setIsSubmitting] = useState(false) // TODO: Pass to context to show spinner
+    const { getUserDataFromLocalStorage, setUser, user } = useAuth()
     const { isBackgroundConnectionEstablished, giveFeedback, trackAnalyticEvent } = useApi()
     const {
         response,
@@ -45,7 +44,6 @@ const PreSearchSidebarContent = () => {
     const triggerMessageSearchAfterSidebarIsOpened = useCallback(() => {
         if (!isBackgroundConnectionEstablished) return
         reinitFetch()
-        // fetchRecentActivity('https://www.linkedin.com/in/tomas-volonte')
     }, [isBackgroundConnectionEstablished])
 
     useEffect(() => {
@@ -90,7 +88,6 @@ const PreSearchSidebarContent = () => {
 
     const handleSubmit = async () => {
         setError(undefined)
-        // setIsSubmitting(true)
         const url = window.location.href
 
         if (!isLinkedInURL(url)) {
@@ -100,7 +97,6 @@ const PreSearchSidebarContent = () => {
                 subMessage: '',
                 hasButtonHandler: false,
             })
-            // setIsSubmitting(false)
 
             return
         }
@@ -113,7 +109,6 @@ const PreSearchSidebarContent = () => {
                 subMessage: '',
                 hasButtonHandler: false,
             })
-            // setIsSubmitting(false)
 
             return
         }
@@ -124,7 +119,12 @@ const PreSearchSidebarContent = () => {
     const getMessages = async (profileUrl: string) => {
         await fetchMessages(profileUrl)
 
-        // setIsSubmitting(false)
+        if (!error && !!user) {
+            setUser({
+                ...user,
+                usage: { ...user.usage, qty_of_messages_created: user.usage.qty_of_messages_created + 1 },
+            })
+        }
     }
 
     const setProfileIfScrape = () => {
