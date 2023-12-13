@@ -93,8 +93,10 @@ function addSalesPilotButtonToProfile() {
     const anchor = document.querySelector(SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR)
     if (!anchor) return
     const button = createProfileButton()
-    button.className = anchor.querySelector("button")?.className ?? ""
-    button.className = `${button.className} sales-pilot-button`
+    const anchorButtons = anchor.querySelectorAll("button")
+
+    button.className = `${anchorButtons?.[1]?.className ?? ""} sales-pilot-button`
+
     const linkedinIcon = anchor.querySelector("li-icon")?.cloneNode(true)
     if (linkedinIcon) {
         button.insertBefore(linkedinIcon, button.firstChild)
@@ -122,9 +124,8 @@ function addSalesPilotButtonToBubbleChat() {
             const bubbleChatActionsContainer = element
             if (element.querySelector('#sales-pilot-chat-button')) return
             const button = document.createElement('button')
-            if (!button) {
-                return
-            }
+            if (!button) return
+
             button.id = 'sales-pilot-chat-button'
             const buttonImage = document.createElement('img')
             buttonImage.src = `chrome-extension://${EXTENSION_ID}/react/js/febe6d340b6ede224c85d19140934589.png`
@@ -147,14 +148,16 @@ function initializeExtension() {
     const body = document.querySelector('body')
     if (body) {
         const mutationObserver = new MutationObserver((mutations) => {
+            const anchor = document.querySelector(SALES_PILOT_PROFILE_BUTTON_ANCHOR_SELECTOR)
+            const anchorButtons = anchor?.querySelectorAll("button")
+            if (!anchor || !anchorButtons?.[0]?.className) return
             addDOMContainer()
             loadSidebar()
             addSalesPilotButtonToProfile()
-            //         addSalesPilotButtonToBubbleChat()
         })
 
         //@ts-ignore
-        mutationObserver.observe(body, { childList: true, subtree: true })
+        mutationObserver.observe(body, { childList: true, subtree: true, })
     }
     else {
         setTimeout(initializeExtension, 100)

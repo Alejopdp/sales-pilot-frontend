@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Box, CircularProgress, Typography } from '@mui/material'
+import { useMessageStore } from '../../context/messages.context'
 
 const messages = [
     'Analizando el perfil del usuario',
@@ -15,7 +16,7 @@ const messages = [
 ]
 
 const FetchMessageSpinner = () => {
-    const [spinnerIndex, setSpinnerIndex] = useState(0)
+    const { spinnerIndex, setSpinnerIndex } = useMessageStore()
 
     const intervalCallback = useCallback(() => {
         setSpinnerIndex((actualState) => {

@@ -1,4 +1,4 @@
-import React, { Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 import { MessageResponse } from '../types'
 import useApi from '../hooks/useApi'
 
@@ -30,6 +30,8 @@ type MessageContextType = {
         >
     >
     isFetching: boolean
+    spinnerIndex: number
+    setSpinnerIndex: Dispatch<SetStateAction<number>>
 }
 
 export const MessageContextInitialState: MessageContextType = {
@@ -49,6 +51,8 @@ export const MessageContextInitialState: MessageContextType = {
     error: undefined,
     setError: () => {},
     isFetching: false,
+    spinnerIndex: 0,
+    setSpinnerIndex: () => {},
 }
 
 export const MessageContext = React.createContext<MessageContextType>(MessageContextInitialState)
@@ -61,11 +65,13 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     const [messageIndex, setMessageIndex] = useState<number>(0)
     const [isFetching, setIsFetching] = useState<boolean>(false)
     const [queue, setQueue] = useState<string[]>([])
+    const [spinnerIndex, setSpinnerIndex] = useState<number>(0)
     const { getMessagsWithLinkedinUrl } = useApi()
 
     const fetchMessages = async (leadUrl: string) => {
         try {
             setIsFetching(true)
+            setError(undefined)
             const res = await getMessagsWithLinkedinUrl(leadUrl)
             const data = res.data
 
@@ -87,6 +93,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 lastUrl: leadUrl,
             })
             setIsFetching(false)
+            setSpinnerIndex(0)
         } catch (error) {
             setError({
                 statusCode: 400,
@@ -95,6 +102,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 hasButtonHandler: false,
             })
             setIsFetching(false)
+            setSpinnerIndex(0)
         }
     }
     return (
@@ -110,6 +118,8 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
                 error,
                 setError,
                 isFetching,
+                spinnerIndex,
+                setSpinnerIndex,
             }}
         >
             {children}
@@ -129,6 +139,8 @@ export const useMessageStore = (): MessageContextType => {
         error,
         setError,
         isFetching,
+        spinnerIndex,
+        setSpinnerIndex,
     } = useContext(MessageContext)
 
     return {
@@ -142,5 +154,7 @@ export const useMessageStore = (): MessageContextType => {
         error,
         setError,
         isFetching,
+        spinnerIndex,
+        setSpinnerIndex,
     }
 }
